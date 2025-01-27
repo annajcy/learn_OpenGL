@@ -3,60 +3,37 @@ project(learn_opengl)
 
 set(CMAKE_CXX_STANDARD 20)
 
-# 定义宏 DEBUG
 add_definitions(-DDEBUG)
 
+set(GLAD_PATH ${CMAKE_SOURCE_DIR}/third_party/glad)
+set(GLFW_PATH ${CMAKE_SOURCE_DIR}/third_party/glfw)
 
-add_definitions(-DAPPLE)
+file(GLOB_RECURSE APPLICATION_SRC ${CMAKE_SOURCE_DIR}/application/*.cpp)
+file(GLOB_RECURSE ERROR_CHECK_SRC ${CMAKE_SOURCE_DIR}/error_check/*.cpp)
 
-# 包含头文件路径
-include_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/include
-)
-
-# 设置库文件路径
-link_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/assimp
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/GLFW
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/glm
-)
-
-# 获取 ThirdParty/Source/ 中的所有源文件
-file(GLOB THIRD_PARTY_SRC_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/src/*.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party/src/*.cpp
-)
-
-add_subdirectory(application)
-add_subdirectory(error_check)
-
-# 定义可执行目标
-add_executable(learn_opengl
-        main.cpp
-        ${THIRD_PARTY_SRC_FILES}
-)
-
-# macOS 链接特定框架和库
-if(APPLE)
-
-    file(GLOB assimp_lib ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lib/assimp/*.dylib)
-
-    target_link_libraries(learn_opengl
-            "-framework Cocoa"
-            "-framework IOKit"
-            "-framework CoreFoundation"
-            "-framework CoreGraphics"
-    )
-
-    target_link_libraries(learn_opengl
-            libglfw3.a
-            libglm.a
-            ${assimp_lib}
-    )
-
+find_package(OpenGL REQUIRED)
+if (NOT OpenGL_FOUND)
+    message(FATAL_ERROR "OpenGL not found!")
 endif()
 
-target_link_libraries(learn_opengl
-        application_lib
-        error_check_lib
+include_directories(${OPENGL_INCLUDE_DIR})
+
+include_directories(
+    ${GLAD_PATH}/include
+	${GLFW_PATH}/include
 )
+
+set(SOURCES
+    ${APPLICATION_SRC}
+    ${ERROR_CHECK_SRC}
+    ${GLAD_PATH}/src/glad.c
+
+	${CMAKE_SOURCE_DIR}/main.cpp 
+)
+
+# 定义可执行目标
+add_executable(learn_opengl ${SOURCES})
+
+target_link_libraries(learn_opengl glfw ${OPENGL_LIBRARIES} )
+     
+    

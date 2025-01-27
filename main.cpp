@@ -1,5 +1,5 @@
 #include "glad/glad.h"
-#include "error_check/error_checker.h"
+#include "error_check/error_check.h"
 #include "framework/singleton.h"
 #include "application/application.h"
 
