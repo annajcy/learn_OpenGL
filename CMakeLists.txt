@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 20)
 # 定义宏 DEBUG
 add_definitions(-DDEBUG)
 
+
+add_definitions(-DAPPLE)
+
 # 包含头文件路径
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/third_party/include
