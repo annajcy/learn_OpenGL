@@ -22,6 +22,15 @@ void prepare_single_buffer() {
 			0.0f,  0.0f, 1.0f
 	};
 
+	unsigned int indices[] = {
+		0, 1, 2
+	};
+
+	GLuint ebo = 0;
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 	GLuint pos_vbo = 0;
 	GLuint color_vbo = 0;
 	GL_CALL(glGenBuffers(1, &pos_vbo));
@@ -47,6 +56,8 @@ void prepare_single_buffer() {
 	glEnableVertexAttribArray(color_vao);
 	glVertexAttribPointer(color_vao, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<const void*>(0));
 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
 	glBindVertexArray(0);
 
 }
@@ -58,11 +69,20 @@ void prepare_interleaved_buffer() {
 			0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
 	};
 
+	unsigned int indices[] = {
+		0, 1, 2
+	};
+
 	GLuint vbo = 0;
 
 	glGenBuffers(1, &vbo);
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW));
+
+	GLuint ebo = 0;
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	vao = 0;
 	GL_CALL(glGenVertexArrays(1, &vao));
@@ -71,36 +91,44 @@ void prepare_interleaved_buffer() {
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 
 	GLuint pos_vao = 0;
-	GLuint color_vao = 0;
+	GLuint color_vao = 1;
 
 	GL_CALL(glEnableVertexAttribArray(pos_vao));
 	GL_CALL(glVertexAttribPointer(pos_vao, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<const void*>(0)));
 
 	GL_CALL(glEnableVertexAttribArray(color_vao));
-	GL_CALL(glVertexAttribPointer(color_vao, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<const void*>(0)));
+	GL_CALL(glVertexAttribPointer(color_vao, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<const void*>(3 * sizeof(float))));
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
 	GL_CALL(glBindVertexArray(0));
 }
 
 void prepare_shader() {
 	const char* vertexShaderSource = R"(
-#version 410 core
+#version 460 core
 layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aColor;
+
+out vec3 color;
 
 void main()
 {
 	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+	color = aColor;
 }
 
 )";
 
 	const char* fragmentShaderSource = R"(
 #version 330 core
+
+in vec3 color;
 out vec4 FragColor;
 
 void main()
 {
-    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+    FragColor = vec4(color, 1.0f);
 }
 
 )";
@@ -122,7 +150,7 @@ void main()
 		glGetShaderInfoLog(vertex, 1024, nullptr, infoLog);
 		std::cout << "Error: SHADER COMPILE ERROR --VERTEX" << "\n" << infoLog << std::endl;
 	} else {
-		std::cout << "SHADER COMPILE Succeeded --VERTEX" << "\n";
+		std::cout << "SHADER COMPILE SUCCEEDED --VERTEX" << "\n";
 	}
 
 	glCompileShader(fragment);
@@ -132,7 +160,7 @@ void main()
 		glGetShaderInfoLog(fragment, 1024, nullptr, infoLog);
 		std::cout << "Error: SHADER COMPILE ERROR --FRAGMENT" << "\n" << infoLog << std::endl;
 	} else {
-		std::cout << "SHADER COMPILE Succeeded --FRAGMENT" << "\n";
+		std::cout << "SHADER COMPILE SUCCEEDED --FRAGMENT" << "\n";
 	}
 
 	program = 0;
@@ -147,7 +175,7 @@ void main()
 		glGetProgramInfoLog(program, 1024, nullptr, infoLog);
 		std::cout << "Error: SHADER LINK ERROR " << "\n" << infoLog << std::endl;
 	} else {
-		std::cout << "SHADER Linked Succeeded --FRAGMENT" << "\n";
+		std::cout << "SHADER LINK SUCCEEDED --FRAGMENT" << "\n";
 	}
 
 	glDeleteShader(vertex);
@@ -157,9 +185,10 @@ void main()
 
 void render() {
 	GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
-	glUseProgram(program);
-	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	GL_CALL(glUseProgram(program));
+	GL_CALL(glBindVertexArray(vao));
+	GL_CALL(glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0));
+	GL_CALL(glBindVertexArray(0));
 }
 
 int main()
@@ -170,7 +199,7 @@ int main()
 	}
 
 	prepare_shader();
-	prepare_interleaved_buffer();
+	prepare_single_buffer();
 
 	GL_CALL(glViewport(0, 0, 800, 600));
 	GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
