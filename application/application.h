@@ -1,5 +1,6 @@
 #pragma once
 
+#include "global/core.h"
 #include <iostream>
 #include <functional>
 

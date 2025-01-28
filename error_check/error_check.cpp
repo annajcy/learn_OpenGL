@@ -1,9 +1,4 @@
 #include "error_check.h"
-#include "glad/glad.h"
-
-#include <string>
-#include <iostream>
-#include <cassert>
 
 void check_error() {
 	GLenum error_code = glGetError();

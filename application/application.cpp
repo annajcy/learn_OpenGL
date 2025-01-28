@@ -1,6 +1,4 @@
 #include "application.h"
-#include "glad/glad.h"
-#include <GLFW/glfw3.h>
 
 int Application::width() const{ return m_width; }
 int Application::height() const { return m_height; }

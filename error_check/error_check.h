@@ -1,5 +1,11 @@
 #pragma once
 
+#include "global/core.h"
+
+#include <string>
+#include <iostream>
+#include <cassert>
+
 #ifdef DEBUG
 #define GL_CALL(function) \
     do { \

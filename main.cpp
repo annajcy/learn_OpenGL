@@ -1,7 +1,14 @@
 #include "glad/glad.h"
 #include "error_check/error_check.h"
-#include "framework/singleton.h"
+#include "global/singleton.h"
 #include "application/application.h"
+#include "utils/string_utils.h"
+#include "shader/shader_code.h"
+#include "shader/shader_program.h"
+
+
+#include <string>
+#include <memory>
 
 #include <iostream>
 
@@ -19,7 +26,7 @@ void prepare_single_buffer() {
 	float colors[] = {
 			1.0f, 0.0f, 0.0f,
 			0.0f, 1.0f, 0.0f,
-			0.0f,  0.0f, 1.0f
+			0.0f, 0.0f, 1.0f
 	};
 
 	unsigned int indices[] = {
@@ -104,91 +111,39 @@ void prepare_interleaved_buffer() {
 	GL_CALL(glBindVertexArray(0));
 }
 
+std::shared_ptr<Shader_program> shader_program = std::make_shared<Shader_program>();
+
 void prepare_shader() {
-	const char* vertexShaderSource = R"(
-#version 460 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aColor;
 
-out vec3 color;
+	std::string vertex_shader_code = utils::load_from_file("assets/shaders/simple/vertex.glsl");
+	std::string fragment_shader_code = utils::load_from_file("assets/shaders/simple/fragment.glsl");
 
-void main()
-{
-	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-	color = aColor;
-}
+	std::shared_ptr<Shader_code> vertex_shader = std::make_shared<Shader_code>();
+	vertex_shader->init(vertex_shader_code, Shader_code::Shader_type::VERTEX);
+	vertex_shader->compile();
+	vertex_shader->check_compile_error();
 
-)";
+	std::shared_ptr<Shader_code> fragment_shader = std::make_shared<Shader_code>();
+	fragment_shader->init(fragment_shader_code, Shader_code::Shader_type::FRAGMENT);
+	fragment_shader->compile();
+	fragment_shader->check_compile_error();
 
-	const char* fragmentShaderSource = R"(
-#version 330 core
-
-in vec3 color;
-out vec4 FragColor;
-
-void main()
-{
-    FragColor = vec4(color, 1.0f);
-}
-
-)";
-
-	GLuint vertex, fragment;
-	vertex = glCreateShader(GL_VERTEX_SHADER);
-	fragment = glCreateShader(GL_FRAGMENT_SHADER);
-
-	//3 为shader程序输入shader代码
-	glShaderSource(vertex, 1, &vertexShaderSource, nullptr);
-	glShaderSource(fragment, 1, &fragmentShaderSource, nullptr);
-
-	int success = 0;
-	char infoLog[1024];
-
-	glCompileShader(vertex);
-	glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertex, 1024, nullptr, infoLog);
-		std::cout << "Error: SHADER COMPILE ERROR --VERTEX" << "\n" << infoLog << std::endl;
-	} else {
-		std::cout << "SHADER COMPILE SUCCEEDED --VERTEX" << "\n";
-	}
-
-	glCompileShader(fragment);
-	//检查fragment编译结果
-	glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragment, 1024, nullptr, infoLog);
-		std::cout << "Error: SHADER COMPILE ERROR --FRAGMENT" << "\n" << infoLog << std::endl;
-	} else {
-		std::cout << "SHADER COMPILE SUCCEEDED --FRAGMENT" << "\n";
-	}
-
-	program = 0;
-	program = glCreateProgram();
-
-	glAttachShader(program, vertex);
-	glAttachShader(program, fragment);
-
-	glLinkProgram(program);
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(program, 1024, nullptr, infoLog);
-		std::cout << "Error: SHADER LINK ERROR " << "\n" << infoLog << std::endl;
-	} else {
-		std::cout << "SHADER LINK SUCCEEDED --FRAGMENT" << "\n";
-	}
-
-	glDeleteShader(vertex);
-	glDeleteShader(fragment);
+	shader_program->init();
+	shader_program->attach_shader(vertex_shader);
+	shader_program->attach_shader(fragment_shader);
+	
+	shader_program->link();
+	shader_program->check_link_error();
 
 }
 
 void render() {
 	GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
-	GL_CALL(glUseProgram(program));
+	shader_program->attach_program();
 	GL_CALL(glBindVertexArray(vao));
 	GL_CALL(glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0));
 	GL_CALL(glBindVertexArray(0));
+	shader_program->detach_program();
 }
 
 int main()
