@@ -11,7 +11,6 @@
 
 #include "utils/string_utils.h"
 
-
 #include <string>
 #include <memory>
 #include <iostream>
@@ -94,8 +93,8 @@ std::shared_ptr<Shader_program> shader_program = std::make_shared<Shader_program
 
 void prepare_shader() {
 
-	std::string vertex_shader_code = utils::load_from_file("assets/shaders/textured_triangle/vertex.glsl");
-	std::string fragment_shader_code = utils::load_from_file("assets/shaders/textured_triangle/fragment.glsl");
+	std::string vertex_shader_code = utils::load_from_file("assets/shaders/mipmap/vertex.glsl");
+	std::string fragment_shader_code = utils::load_from_file("assets/shaders/mipmap/fragment.glsl");
 
 	std::shared_ptr<Shader_code> vertex_shader = std::make_shared<Shader_code>();
 	vertex_shader->init(vertex_shader_code, Shader_code::Shader_type::VERTEX);
@@ -120,7 +119,15 @@ std::shared_ptr<Texture> texture = std::make_shared<Texture>();
 
 void prepare_texture() {
 	image->init("assets/image/goku.jpg");
-	texture->init(image);
+	texture->init(image, false);
+
+	texture->attach_texture();
+	texture->set_wrap(Texture::Warp::S, Texture::Wrap_type::REPEAT);
+	texture->set_wrap(Texture::Warp::T, Texture::Wrap_type::REPEAT);
+	texture->set_filter(Texture::Filter::MIN, Texture::Filter_type::LINEAR_MIPMAP_LINEAR);
+	texture->set_filter(Texture::Filter::MAG, Texture::Filter_type::LINEAR);
+
+	texture->detach_texture();
 }
 
 void render() {
@@ -130,6 +137,7 @@ void render() {
 	shader_program->set_uniform<float>("time", static_cast<float>(glfwGetTime()));
 	shader_program->set_uniform<float>("speed", 1.0f);
 	shader_program->set_uniform<int>("textureSampler0", 0);
+	shader_program->set_uniform_glm<glm::vec2>("resolution", glm::vec2(800.0f, 600.0f));
 
 	texture->attach_texture();
 

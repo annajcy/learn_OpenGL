@@ -1,10 +1,9 @@
 #include "texture.h"
-#include "global/error_check.h"
 
 Texture::Texture() = default;
 Texture::~Texture() = default;
 
-void Texture::init(const std::shared_ptr<Image> &image, unsigned int unit) {
+void Texture::init(const std::shared_ptr<Image> &image, unsigned int unit, bool set_default_warp_filter) {
     m_image = image;
     m_unit = unit;
 
@@ -12,13 +11,17 @@ void Texture::init(const std::shared_ptr<Image> &image, unsigned int unit) {
 
     attach_texture();
 
-    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_image->width(), m_image->height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, m_image->data()));
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_image->width(), m_image->height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, m_image->data());
+    glGenerateMipmap(GL_TEXTURE_2D);
 
-    set_wrap(Warp::S, Wrap_type::REPEAT);
-    set_wrap(Warp::T, Wrap_type::REPEAT);
-
-    set_filter(Filter::MIN, Filter_type::LINEAR);
-    set_filter(Filter::MAG, Filter_type::LINEAR);
+    if (!set_default_warp_filter) {
+        set_wrap(Warp::S, Wrap_type::REPEAT);
+        set_wrap(Warp::T, Wrap_type::REPEAT);
+        set_filter(Filter::MIN, Filter_type::LINEAR_MIPMAP_LINEAR);
+        set_filter(Filter::MAG, Filter_type::LINEAR);
+    }
+   
+    detach_texture();
 
 }
 

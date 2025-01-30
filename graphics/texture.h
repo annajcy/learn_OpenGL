@@ -44,7 +44,7 @@ public:
     Texture();
     ~Texture();
 
-    void init(const std::shared_ptr<Image> &image, unsigned int unit = 0);
+    void init(const std::shared_ptr<Image> &image, unsigned int unit = 0, bool set_default_warp_filter = true);
     void destroy();
     void set_wrap(Warp warp, Wrap_type wrap_type);
     void set_filter(Filter filter, Filter_type filter_type);
