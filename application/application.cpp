@@ -3,8 +3,7 @@
 int Application::width() const{ return m_width; }
 int Application::height() const { return m_height; }
 
-bool Application::init(int width, int height, const std::string &name)
-{
+bool Application::init(int width, int height, const std::string &name) {
 	m_width = width;
 	m_height = height;
 
@@ -34,46 +33,39 @@ bool Application::init(int width, int height, const std::string &name)
 	return true;
 }
 
-bool Application::is_active()
-{
+bool Application::is_active() {
 	if (glfwWindowShouldClose(m_window)) return false;
 	return true;
 }
 
-void Application::destroy()
-{
+void Application::destroy() {
 	glfwTerminate();
 }
 
-void Application::frame_buffer_resize_callback(GLFWwindow* window, int width, int height)
-{
+void Application::frame_buffer_resize_callback(GLFWwindow* window, int width, int height) {
 	auto* self = static_cast<Application*>(glfwGetWindowUserPointer(window));
 	if (self != nullptr) {
 		self->m_resize_callback(width, height);
 	}
 }
 
-void Application::key_callback(GLFWwindow* window, int key, int scan_code, int action, int mods)
-{
+void Application::key_callback(GLFWwindow* window, int key, int scan_code, int action, int mods) {
 	auto* self = static_cast<Application*>(glfwGetWindowUserPointer(window));
 	if (self != nullptr) {
 		self->m_keyboard_callback(key, scan_code, action, mods);
 	}
 }
 
-void Application::update()
-{
+void Application::update() {
 	glfwPollEvents();
 	glfwSwapBuffers(m_window);
 }
 
-void Application::set_resize_callback(const Resize_callback& callback)
-{
+void Application::set_resize_callback(const Resize_callback& callback) {
 	m_resize_callback = callback;
 }
 
-void Application::set_keyboard_callBack(const Keyboard_callback& callback)
-{
+void Application::set_keyboard_callBack(const Keyboard_callback& callback) {
 	m_keyboard_callback = callback;
 }
 

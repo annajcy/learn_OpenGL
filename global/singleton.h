@@ -1,22 +1,33 @@
 #pragma once
 
+#include <memory>
+
 template<typename T>
 class Singleton {
 public:
-	static T *get_instance() {
-		if (m_instance == nullptr) {
-			m_instance = new T();
-		}
-		return m_instance;
-	}
-	virtual ~Singleton() = default;
+    static std::unique_ptr<T>& get_instance();
+    Singleton();
+    virtual ~Singleton();
 private:
-	static T* m_instance;
-	Singleton() = default;
+    static std::unique_ptr<T> m_instance;
 };
 
 template<typename T>
-T* Singleton<T>::m_instance = nullptr;
+std::unique_ptr<T> Singleton<T>::m_instance{};
+
+template<typename T>
+Singleton<T>::Singleton() = default;
+
+template<typename T>
+Singleton<T>::~Singleton() = default;
+
+template<typename T>
+std::unique_ptr<T>& Singleton<T>::get_instance() {
+    if (!m_instance) {
+        m_instance = std::make_unique<T>();
+    }
+    return m_instance;
+}
 
 
 
