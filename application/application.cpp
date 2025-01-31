@@ -1,5 +1,8 @@
 #include "application.h"
 
+Application::Application() = default;
+Application::~Application() = default;
+
 int Application::width() const{ return m_width; }
 int Application::height() const { return m_height; }
 
@@ -29,6 +32,9 @@ bool Application::init(int width, int height, const std::string &name) {
 
 	glfwSetFramebufferSizeCallback(m_window, frame_buffer_resize_callback);
 	glfwSetKeyCallback(m_window, key_callback);
+	glfwSetCursorPosCallback(m_window, cursor_callback);
+	glfwSetMouseButtonCallback(m_window, mouse_callback);
+	glfwSetScrollCallback(m_window, scroll_callback);
 
 	return true;
 }
@@ -45,27 +51,46 @@ void Application::destroy() {
 void Application::frame_buffer_resize_callback(GLFWwindow* window, int width, int height) {
 	auto* self = static_cast<Application*>(glfwGetWindowUserPointer(window));
 	if (self != nullptr) {
-		self->m_resize_callback(width, height);
+		self->m_resize_actions.execute(width, height);
 	}
 }
 
 void Application::key_callback(GLFWwindow* window, int key, int scan_code, int action, int mods) {
 	auto* self = static_cast<Application*>(glfwGetWindowUserPointer(window));
 	if (self != nullptr) {
-		self->m_keyboard_callback(key, scan_code, action, mods);
+		self->m_keyboard_actions.execute(key, scan_code, action, mods);
 	}
 }
+
+void Application::cursor_callback(GLFWwindow* window, double xpos, double ypos) {
+	auto* self = static_cast<Application*>(glfwGetWindowUserPointer(window));
+	if (self != nullptr) {
+		self->m_cursor_actions.execute(xpos, ypos);
+	}
+}
+
+void Application::mouse_callback(GLFWwindow* window, int button, int action, int mods) {
+	auto* self = static_cast<Application*>(glfwGetWindowUserPointer(window));
+	if (self != nullptr) {
+		self->m_mouse_actions.execute(button, action, mods);
+	}
+}
+
+void Application::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	auto* self = static_cast<Application*>(glfwGetWindowUserPointer(window));
+	if (self != nullptr) {
+		self->m_scroll_actions.execute(xoffset, yoffset);
+	}
+}
+
+Resize_action& Application::resize_actions() { return m_resize_actions; }
+Keyboard_action& Application::keyboard_actions() { return m_keyboard_actions; }
+Cursor_action& Application::cursor_actions() { return m_cursor_actions; }
+Mouse_action& Application::mouse_actions() { return m_mouse_actions; }
+Scroll_action& Application::scroll_actions() { return m_scroll_actions; }
 
 void Application::update() {
 	glfwPollEvents();
 	glfwSwapBuffers(m_window);
-}
-
-void Application::set_resize_callback(const Resize_callback& callback) {
-	m_resize_callback = callback;
-}
-
-void Application::set_keyboard_callBack(const Keyboard_callback& callback) {
-	m_keyboard_callback = callback;
 }
 

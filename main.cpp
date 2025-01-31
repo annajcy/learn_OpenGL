@@ -137,7 +137,7 @@ void render() {
 	shader_program->set_uniform<float>("time", static_cast<float>(glfwGetTime()));
 	shader_program->set_uniform<float>("speed", 1.0f);
 	shader_program->set_uniform<int>("textureSampler0", 0);
-	shader_program->set_uniform_glm<glm::vec2>("resolution", glm::vec2(800.0f, 600.0f));
+	shader_program->set_uniform_glm<glm::vec2>("resolution", glm::vec2(App::get_instance()->width(), App::get_instance()->height()));
 
 	texture->attach_texture();
 
@@ -159,6 +159,26 @@ int main()
 		std::cout << "init Failed" << std::endl;
 		return -1;
 	}
+
+	App::get_instance()->resize_actions().add([](int width, int height) {
+		std::cout << "width: " << width << " height: " << height << std::endl;
+	});
+
+	App::get_instance()->keyboard_actions().add([](int key, int scan_code, int action, int mods) {
+		std::cout << "key: " << key << " scan_code: " << scan_code << " action: " << action << " mods: " << mods << std::endl;
+	});
+
+	App::get_instance()->cursor_actions().add([](double xpos, double ypos) {
+		std::cout << "xpos: " << xpos << " ypos: " << ypos << std::endl;
+	});
+
+	App::get_instance()->mouse_actions().add([](int button, int action, int mods) {
+		std::cout << "button: " << button << " action: " << action << " mods: " << mods << std::endl;
+	});
+
+	App::get_instance()->scroll_actions().add([](double xoffset, double yoffset) {
+		std::cout << "xoffset: " << xoffset << " yoffset: " << yoffset << std::endl;
+	});
 
 	prepare_shader();
 	prepare_single_buffer();

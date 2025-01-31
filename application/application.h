@@ -1,13 +1,18 @@
 #pragma once
 
 #include "global/core.h"
+#include "global/action.h"
+
 #include <iostream>
 #include <functional>
 
 class GLFWwindow;
 
-using Resize_callback = std::function<void(int, int)>;
-using Keyboard_callback = std::function<void(int, int, int, int)>;
+using Resize_action = Action<int, int>;
+using Mouse_action = Action<int, int, int>;
+using Keyboard_action = Action<int, int, int, int>;
+using Cursor_action = Action<double, double>;
+using Scroll_action = Action<double, double>;
 
 class Application {
 public:
@@ -17,27 +22,45 @@ public:
 	static void destroy();
 	[[nodiscard]] int width() const;
 	[[nodiscard]] int height() const;
-	void set_resize_callback(const Resize_callback& callback);
-	void set_keyboard_callBack(const Keyboard_callback& callback);
-	Application() = default;
-	~Application() = default;
+	[[nodiscard]] GLFWwindow* window() const;
+
+	Resize_action& resize_actions();
+	Keyboard_action& keyboard_actions();
+	Cursor_action& cursor_actions();
+	Mouse_action& mouse_actions();
+	Scroll_action& scroll_actions();
+
+	Application();
+	~Application();
+
 private:
 	int m_width{0};
 	int m_height{0};
 	GLFWwindow* m_window{nullptr};
 
-	Resize_callback m_resize_callback{[](int width, int height) {
-		std::cout << "new window size：" << width << " , " << height << std::endl;
-	}};
+	Scroll_action m_scroll_actions{};
+	Cursor_action m_cursor_actions{};
+	Mouse_action m_mouse_actions{};
+	Resize_action m_resize_actions{
+		[](int width, int height) {
+			std::cout << "glViewport resize" << std::endl;
+			glViewport(0, 0, width, height);
+		}
+	};
+	Keyboard_action m_keyboard_actions{
+		[&](int key, int scan_code, int action, int mods) {
+			std::cout << "application exit" << std::endl;
+			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+				glfwSetWindowShouldClose(m_window, true);
+			}
+		}
+	};
 
-	Keyboard_callback m_keyboard_callback{[](int key, int scan_code, int action, int mods) {
-		std::cout << "pressed：" << key << std::endl;
-		std::cout << "action：" << action << std::endl;
-		std::cout << "mods：" << mods << std::endl;
-	}};
-
+	static void cursor_callback(GLFWwindow* window, double xpos, double ypos);
 	static void frame_buffer_resize_callback(GLFWwindow* window, int width, int height);
 	static void key_callback(GLFWwindow* window, int key, int scan_code, int action, int mods);
+	static void mouse_callback(GLFWwindow* window, int button, int action, int mods);
+	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 };
 
 
