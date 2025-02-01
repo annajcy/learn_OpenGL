@@ -1,6 +1,7 @@
 #pragma once
 
 #include "global/core.h"
+#include "global/singleton.h"
 #include "global/action.h"
 
 #include <iostream>
@@ -62,5 +63,7 @@ private:
 	static void mouse_callback(GLFWwindow* window, int button, int action, int mods);
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 };
+
+using App = Singleton<Application>;
 
 

@@ -3,8 +3,13 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Image::Image() = default;
-Image::~Image() = default;
+Image::Image(const std::string& path, bool flip_y) {
+    init(path, flip_y);
+}
+
+Image::~Image() {
+    destroy();
+}
 
 void Image::init(const std::string& path, bool flip_y) {
     stbi_set_flip_vertically_on_load(flip_y);

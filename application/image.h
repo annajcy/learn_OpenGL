@@ -12,7 +12,7 @@ private:
     
 public:
 
-    Image();
+    Image(const std::string& path, bool flip_y = true);
     ~Image();
     
     void init(const std::string& path, bool flip_y = true);

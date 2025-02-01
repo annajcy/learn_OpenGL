@@ -2,12 +2,13 @@
 #include "global/singleton.h"
 #include "global/error_check.h"
 
-#include "graphics/shader_code.h"
-#include "graphics/shader_program.h"
+#include "graphics/shader/shader_code.h"
+#include "graphics/shader/shader_program.h"
 #include "graphics/texture.h"
 
 #include "application/application.h"
 #include "application/image.h"
+#include "application/input.h"
 
 #include "utils/string_utils.h"
 
@@ -16,8 +17,6 @@
 #include <iostream>
 
 GLuint vao, ebo;
-
-using App = Singleton<Application>;
 
 void prepare_single_buffer() {
 	float positions[] = {
@@ -89,24 +88,22 @@ void prepare_single_buffer() {
 
 }
 
-std::shared_ptr<Shader_program> shader_program = std::make_shared<Shader_program>();
+std::shared_ptr<Shader_program> shader_program{};
 
 void prepare_shader() {
 
 	std::string vertex_shader_code = utils::load_from_file("assets/shaders/mipmap/vertex.glsl");
 	std::string fragment_shader_code = utils::load_from_file("assets/shaders/mipmap/fragment.glsl");
 
-	std::shared_ptr<Shader_code> vertex_shader = std::make_shared<Shader_code>();
-	vertex_shader->init(vertex_shader_code, Shader_code::Shader_type::VERTEX);
+	std::shared_ptr<Shader_code> vertex_shader = std::make_shared<Shader_code>(vertex_shader_code, Shader_code::Shader_type::VERTEX);
 	vertex_shader->compile();
 	vertex_shader->check_compile_error();
 
-	std::shared_ptr<Shader_code> fragment_shader = std::make_shared<Shader_code>();
-	fragment_shader->init(fragment_shader_code, Shader_code::Shader_type::FRAGMENT);
+	std::shared_ptr<Shader_code> fragment_shader = std::make_shared<Shader_code>(fragment_shader_code, Shader_code::Shader_type::FRAGMENT);
 	fragment_shader->compile();
 	fragment_shader->check_compile_error();
 
-	shader_program->init();
+	shader_program = std::make_shared<Shader_program>();
 	shader_program->attach_shader(vertex_shader);
 	shader_program->attach_shader(fragment_shader);
 	
@@ -114,12 +111,12 @@ void prepare_shader() {
 	shader_program->check_link_error();
 }
 
-std::shared_ptr<Image> image = std::make_shared<Image>();
-std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+std::shared_ptr<Image> image {};
+std::shared_ptr<Texture> texture {};
 
 void prepare_texture() {
-	image->init("assets/image/goku.jpg");
-	texture->init(image, false);
+	image = std::make_shared<Image>("assets/image/goku.jpg");
+	texture = std::make_shared<Texture>(image, false);
 
 	texture->attach_texture();
 	texture->set_wrap(Texture::Warp::S, Texture::Wrap_type::REPEAT);
@@ -149,8 +146,11 @@ void render() {
 
 	texture->detach_texture();
 
-
 	shader_program->detach_program();
+
+	if (Input::get_instance()->is_mouse_button_pressed(GLFW_MOUSE_BUTTON_LEFT)) {
+		std::cout << "Mouse button left pressed" << std::endl;
+	}
 }
 
 int main()
@@ -160,24 +160,21 @@ int main()
 		return -1;
 	}
 
-	App::get_instance()->resize_actions().add([](int width, int height) {
-		std::cout << "width: " << width << " height: " << height << std::endl;
-	});
-
-	App::get_instance()->keyboard_actions().add([](int key, int scan_code, int action, int mods) {
-		std::cout << "key: " << key << " scan_code: " << scan_code << " action: " << action << " mods: " << mods << std::endl;
+	//upd io events
+	App::get_instance()->keyboard_actions().add([](int key, int scancode, int action, int mods) {
+		Input::get_instance()->update_key(key, scancode, action, mods);
 	});
 
 	App::get_instance()->cursor_actions().add([](double xpos, double ypos) {
-		std::cout << "xpos: " << xpos << " ypos: " << ypos << std::endl;
+		Input::get_instance()->update_cursor_position(xpos, ypos);
 	});
 
 	App::get_instance()->mouse_actions().add([](int button, int action, int mods) {
-		std::cout << "button: " << button << " action: " << action << " mods: " << mods << std::endl;
+		Input::get_instance()->update_mouse_button(button, action, mods);
 	});
 
 	App::get_instance()->scroll_actions().add([](double xoffset, double yoffset) {
-		std::cout << "xoffset: " << xoffset << " yoffset: " << yoffset << std::endl;
+		Input::get_instance()->update_scroll(xoffset, yoffset);
 	});
 
 	prepare_shader();
@@ -188,8 +185,8 @@ int main()
 	GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
 
 	while (App::get_instance()->is_active()) {
-		render();
 		App::get_instance()->update();
+		render();
 	}
 
 	Application::destroy();

@@ -1,7 +1,12 @@
 #include "shader_code.h"
 
-Shader_code::Shader_code() = default;
-Shader_code::~Shader_code() = default;
+Shader_code::Shader_code(const std::string &code, Shader_type type){
+    init(code, type);
+}
+
+Shader_code::~Shader_code(){
+    destroy();
+}
 
 void Shader_code::init(const std::string &code, Shader_type type) {
     m_code = code;

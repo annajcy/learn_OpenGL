@@ -1,7 +1,13 @@
 #include "shader_program.h"
 
-Shader_program::Shader_program() = default;
-Shader_program::~Shader_program() = default;
+Shader_program::Shader_program() {
+    init();
+};
+
+
+Shader_program::~Shader_program() {
+    destroy();
+}
 
 void Shader_program::init() {
     m_program_id = glCreateProgram();

@@ -1,7 +1,12 @@
 #include "texture.h"
 
-Texture::Texture() = default;
-Texture::~Texture() = default;
+Texture::Texture(const std::shared_ptr<Image> &image, unsigned int unit, bool set_default_warp_filter) {
+    init(image, unit, set_default_warp_filter);
+}
+
+Texture::~Texture() {
+    destroy();
+}
 
 void Texture::init(const std::shared_ptr<Image> &image, unsigned int unit, bool set_default_warp_filter) {
     m_image = image;

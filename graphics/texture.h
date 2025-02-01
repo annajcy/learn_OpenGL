@@ -41,7 +41,7 @@ private:
     std::shared_ptr<Image> m_image{};
     unsigned int m_unit{};
 public:
-    Texture();
+    Texture(const std::shared_ptr<Image> &image, unsigned int unit = 0, bool set_default_warp_filter = true);
     ~Texture();
 
     void init(const std::shared_ptr<Image> &image, unsigned int unit = 0, bool set_default_warp_filter = true);

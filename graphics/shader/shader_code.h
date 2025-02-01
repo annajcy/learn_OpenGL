@@ -22,7 +22,7 @@ private:
     std::string m_code{};
     Shader_type m_type{};
 public:
-    Shader_code();
+    Shader_code(const std::string &code, Shader_type type);
     ~Shader_code();
 
     void init(const std::string &code, Shader_type type);
