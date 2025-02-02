@@ -1,12 +1,13 @@
 #include "orthographic_camera.h"
 
-Orthographic_camera::Orthographic_camera(float up_bound, float down_bound, float left_bound, float right_bound, float near_bound, float far_bound, const glm::vec3 &position, const glm::vec3 &up, const glm::vec3 &right) : Camera(position, up, right) {
+Orthographic_camera::Orthographic_camera(float up_bound, float down_bound, float left_bound, float right_bound, float near_bound, float far_bound, float scale, const glm::vec3 &position, const glm::vec3 &up, const glm::vec3 &right) : Camera(position, up, right) {
     m_up_bound = up_bound;
     m_down_bound = down_bound;
     m_left_bound = left_bound;
     m_right_bound = right_bound;
     m_near_bound = near_bound;
     m_far_bound = far_bound;
+    m_scale = scale;
 }
 
 Orthographic_camera::~Orthographic_camera() = default;
@@ -60,5 +61,9 @@ float& Orthographic_camera::far_bound() {
 }
 
 glm::mat4 Orthographic_camera::get_projection_matrix() const {
-    return glm::ortho(m_left_bound, m_right_bound, m_down_bound, m_up_bound, m_near_bound, m_far_bound);
+    return glm::ortho(m_left_bound * m_scale, m_right_bound * m_scale, m_down_bound * m_scale, m_up_bound * m_scale, m_near_bound, m_far_bound );
+}
+
+void Orthographic_camera::adjust_scale(float delta_scale) {
+    m_scale += delta_scale;
 }

@@ -44,3 +44,7 @@ float& Perspective_camera::far_bound() {
 glm::mat4 Perspective_camera::get_projection_matrix() const {
     return glm::perspective(glm::radians(m_fov), m_aspect, m_near_bound, m_far_bound);
 }
+
+void Perspective_camera::adjust_scale(float delta_scale) {
+    translate(front(), delta_scale);
+}

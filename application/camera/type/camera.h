@@ -8,6 +8,7 @@ protected:
     glm::vec3 m_position{0.0f, 0.0f, 0.0f};
     glm::vec3 m_up{0.0f, 1.0f, 0.0f};
     glm::vec3 m_right{1.0f, 0.0f, 0.0f};
+    float m_scale{1.0};
 
 public:
 
@@ -28,10 +29,10 @@ public:
 
     glm::mat4 get_view_matrix() const;
     virtual glm::mat4 get_projection_matrix() const = 0;
-
+    virtual void adjust_scale(float delta_scale) = 0;
     void translate(const glm::vec3 &direction, float distance);
     void translate(const glm::vec3 &translation);
+    void rotate(float angle, const glm::vec3& axis);
     void pitch(float angle);
     void yaw(float angle);
-    
 };

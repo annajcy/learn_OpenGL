@@ -8,14 +8,28 @@
 
 class Camera_control { 
 protected:
+    std::shared_ptr<Camera> m_camera;
 
-    std::shared_ptr<Camera> m_camera{};
+    float m_pitch_sensitivity {1.0f};
+    float m_yaw_sensitivity {1.0f};
+    float m_tranlate_sensitivity {1.0f};
+    float m_scale_sensitivity {1.0f};
 
 public:
+    explicit Camera_control(const std::shared_ptr<Camera> &camera);
+    virtual ~Camera_control() = default;
 
-    Camera_control(const std::shared_ptr<Camera> &camera) { m_camera = camera; }
-    ~Camera_control() = default;
+    std::shared_ptr<Camera> camera();
 
-    std::shared_ptr<Camera> camera() { return m_camera; }
     virtual void update() = 0;
+
+    [[nodiscard]] float get_pitch_sensitivity() const;
+    [[nodiscard]] float get_yaw_sensitivity() const;
+    [[nodiscard]] float get_translate_sensitivity() const;
+    [[nodiscard]] float get_scale_sensitivity() const;
+
+    float& pitch_sensitivity();
+    float& yaw_sensitivity();
+    float& translate_sensitivity();
+    float& scale_sensitivity();
 };

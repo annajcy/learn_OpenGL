@@ -10,6 +10,11 @@
 #include "application/image.h"
 #include "application/input.h"
 
+#include "application/camera/control/trackball_camera_control.h"
+#include "application/camera/control/game_camera_control.h"
+#include "application/camera/type/orthographic_camera.h"
+#include "application/camera/type/perspective_camera.h"
+
 #include "utils/string_utils.h"
 
 #include <string>
@@ -20,10 +25,10 @@ GLuint vao, ebo;
 
 void prepare_single_buffer() {
 	float positions[] = {
-			-0.5f, -0.5f, 0.0f,
-			0.5f, -0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f,
-			0.5f,  0.5f, 0.0f,
+			-0.5f, -0.5f, 1.0f,
+			0.5f, -0.5f, 1.0f,
+			-0.5f,  0.5f, 1.0f,
+			0.5f,  0.5f, 1.0f,
 	};
 
 	float colors[] = {
@@ -92,8 +97,8 @@ std::shared_ptr<Shader_program> shader_program{};
 
 void prepare_shader() {
 
-	std::string vertex_shader_code = utils::load_from_file("assets/shaders/mipmap/vertex.glsl");
-	std::string fragment_shader_code = utils::load_from_file("assets/shaders/mipmap/fragment.glsl");
+	std::string vertex_shader_code = utils::load_from_file("assets/shaders/transform/vertex.glsl");
+	std::string fragment_shader_code = utils::load_from_file("assets/shaders/transform/fragment.glsl");
 
 	std::shared_ptr<Shader_code> vertex_shader = std::make_shared<Shader_code>(vertex_shader_code, Shader_code::Shader_type::VERTEX);
 	vertex_shader->compile();
@@ -127,30 +132,59 @@ void prepare_texture() {
 	texture->detach_texture();
 }
 
+std::shared_ptr<Perspective_camera> camera{};
+//std::shared_ptr<Orthographic_camera> camera{};
+
+std::shared_ptr<Trackball_camera_control> camera_control{};
+//std::shared_ptr<Game_camera_control> camera_control{};
+
+void prepare_camera() {
+
+	camera = std::make_shared<Perspective_camera>(
+		60.0f,
+		(float) App::get_instance()->width() / (float) App::get_instance()->height(),
+		0.1f, 1000.0f,
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f)
+	);
+
+	// auto size = 10.0f;
+	// camera = std::make_shared<Orthographic_camera>(
+	// 	size, -size, -size, size, size, -size,
+	// 	glm::vec3(0.0f, 0.0f, 0.0f),
+	// 	glm::vec3(0.0f, 1.0f, 0.0f),
+	// 	glm::vec3(0.0f, 0.0f, 1.0f)
+	// );
+
+	camera_control = std::make_shared<Trackball_camera_control>(camera);
+	//camera_control = std::make_shared<Game_camera_control>(camera);
+
+}
+
 void render() {
-	GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	shader_program->attach_program();
 
 	shader_program->set_uniform<float>("time", static_cast<float>(glfwGetTime()));
-	shader_program->set_uniform<float>("speed", 1.0f);
 	shader_program->set_uniform<int>("textureSampler0", 0);
 	shader_program->set_uniform_glm<glm::vec2>("resolution", glm::vec2(App::get_instance()->width(), App::get_instance()->height()));
+	shader_program->set_uniform_glm<glm::mat4>("model", glm::identity<glm::mat4>());
+	shader_program->set_uniform_glm<glm::mat4>("view", camera->get_view_matrix());
+	shader_program->set_uniform_glm<glm::mat4>("projection", camera->get_projection_matrix());
 
 	texture->attach_texture();
 
-	GL_CALL(glBindVertexArray(vao));
+	glBindVertexArray(vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-	GL_CALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
-	GL_CALL(glBindVertexArray(0));
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 
 	texture->detach_texture();
 
 	shader_program->detach_program();
-
-	if (Input::get_instance()->is_mouse_button_pressed(GLFW_MOUSE_BUTTON_LEFT)) {
-		std::cout << "Mouse button left pressed" << std::endl;
-	}
 }
 
 int main()
@@ -180,12 +214,14 @@ int main()
 	prepare_shader();
 	prepare_single_buffer();
 	prepare_texture();
+	prepare_camera();
 
-	GL_CALL(glViewport(0, 0, 800, 600));
-	GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
+	glViewport(0, 0, App::get_instance()->width(), App::get_instance()->height());
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 	while (App::get_instance()->is_active()) {
 		App::get_instance()->update();
+		camera_control->update();
 		render();
 	}
 
