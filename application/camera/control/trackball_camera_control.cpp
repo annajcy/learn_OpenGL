@@ -1,7 +1,8 @@
 #include "trackball_camera_control.h"
 #include "application/input.h"
-#include <glm/gtc/matrix_transform.hpp>
+
 #include <cmath>
+#include <iostream>
 
 Trackball_camera_control::Trackball_camera_control(const std::shared_ptr<Camera> &camera)
     : Camera_control(camera) {}
@@ -25,18 +26,27 @@ void Trackball_camera_control::update() {
     if (input->is_mouse_button_pressed(GLFW_MOUSE_BUTTON_LEFT)) {
         auto dx = input->get_mouse_dx();
         auto dy = input->get_mouse_dy();
+        
         yaw(dx * m_yaw_sensitivity);
         pitch(dy * m_pitch_sensitivity);
+
+        input->reset_mouse_dx();
+        input->reset_mouse_dy();
     } 
     else if (input->is_mouse_button_pressed(GLFW_MOUSE_BUTTON_MIDDLE)) {
         auto dx = input->get_mouse_dx();
         auto dy = input->get_mouse_dy();
+
         m_camera->translate(m_camera->up(), dy * m_tranlate_sensitivity);
         m_camera->translate(m_camera->right(), dx * m_tranlate_sensitivity);
+
+        input->reset_mouse_dx();
+        input->reset_mouse_dy();
     }
 
     auto delta_scale = input->get_mouse_scroll_dy();
     if (std::abs(delta_scale) > DBL_EPSILON) {
         m_camera->adjust_scale(delta_scale * m_scale_sensitivity);
+        input->reset_scroll_dy();
     }
 }

@@ -23,15 +23,18 @@ public:
     [[nodiscard]] float right_bound() const;
     [[nodiscard]] float near_bound() const;
     [[nodiscard]] float far_bound() const;
+    [[nodiscard]] float scale() const;
 
-    [[nodiscard]] float& up_bound();
-    [[nodiscard]] float& down_bound();
-    [[nodiscard]] float& left_bound();
-    [[nodiscard]] float& right_bound();
-    [[nodiscard]] float& near_bound();
-    [[nodiscard]] float& far_bound();
+    float& up_bound();
+    float& down_bound();
+    float& left_bound();
+    float& right_bound();
+    float& near_bound();
+    float& far_bound();
+    float& scale();
 
-    Orthographic_camera(float up_bound, float down_bound, float left_bound, float right_bound, float near_bound, float far_bound, float scale, const glm::vec3 &position, const glm::vec3 &up, const glm::vec3 &right);
+
+    Orthographic_camera(float up_bound, float down_bound, float left_bound, float right_bound, float near_bound, float far_bound, const glm::vec3 &position, const glm::vec3 &up, const glm::vec3 &right);
     ~Orthographic_camera();
     glm::mat4 get_projection_matrix() const override;
     void adjust_scale(float delta_scale) override;

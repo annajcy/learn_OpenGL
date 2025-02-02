@@ -13,7 +13,7 @@ Camera::~Camera() = default;
 [[nodiscard]] glm::vec3 Camera::down() const { return -m_up; }
 [[nodiscard]] glm::vec3 Camera::right() const { return m_right; }
 [[nodiscard]] glm::vec3 Camera::left() const { return -m_right; }
-[[nodiscard]] glm::vec3 Camera::front() const { return glm::cross(m_up, m_right); }
+[[nodiscard]] glm::vec3 Camera::front() const { return glm::cross(m_right, m_up); }
 [[nodiscard]] glm::vec3 Camera::back() const { return -front(); }
 
 

@@ -10,10 +10,10 @@ class Camera_control {
 protected:
     std::shared_ptr<Camera> m_camera;
 
-    float m_pitch_sensitivity {1.0f};
-    float m_yaw_sensitivity {1.0f};
-    float m_tranlate_sensitivity {1.0f};
-    float m_scale_sensitivity {1.0f};
+    float m_pitch_sensitivity {0.1f};
+    float m_yaw_sensitivity {0.1f};
+    float m_tranlate_sensitivity {0.001f};
+    float m_scale_sensitivity {0.01f};
 
 public:
     explicit Camera_control(const std::shared_ptr<Camera> &camera);

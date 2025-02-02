@@ -1,6 +1,9 @@
 #include "input.h"
 
+#include <iostream>
+
 void Input_system::update_cursor_position(double x, double y) {
+    
     m_mouse_dx = x - m_mouse_x;
     m_mouse_dy = y - m_mouse_y;
 
@@ -66,4 +69,20 @@ double Input_system::get_mouse_scroll_dx() const {
 
 double Input_system::get_mouse_scroll_dy() const {
     return m_mouse_scroll_dy;
+}
+
+void Input_system::reset_mouse_dy() {
+    m_mouse_dy = 0;
+}
+
+void Input_system::reset_mouse_dx() {
+    m_mouse_dx = 0;
+}
+
+void Input_system::reset_scroll_dx() {
+    m_mouse_scroll_dx = 0;
+}
+
+void Input_system::reset_scroll_dy() {
+    m_mouse_scroll_dy = 0;
 }

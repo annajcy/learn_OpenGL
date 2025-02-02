@@ -16,6 +16,9 @@ void Game_camera_control::update()
 
         m_camera->yaw(dx * m_yaw_sensitivity);
         m_camera->pitch(dy * m_pitch_sensitivity);
+
+        input->reset_mouse_dx();
+        input->reset_mouse_dy();
     }
 
     glm::vec3 direction = glm::zero<glm::vec3>();
@@ -24,11 +27,11 @@ void Game_camera_control::update()
         direction += m_camera->front();
     }
 
-    if (input->is_key_pressed(GLFW_KEY_A)) {
+    if (input->is_key_pressed(GLFW_KEY_S)) {
         direction += m_camera->back();
     }
 
-    if (input->is_key_pressed(GLFW_KEY_S)) {
+    if (input->is_key_pressed(GLFW_KEY_A)) {
         direction += m_camera->left();
     }
 
@@ -52,6 +55,7 @@ void Game_camera_control::update()
 
     if (std::abs(delta_scale) > DBL_EPSILON) {
         m_camera->adjust_scale(delta_scale * m_scale_sensitivity);
+        input->reset_scroll_dy();
     }
 }
 

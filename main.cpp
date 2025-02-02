@@ -135,8 +135,8 @@ void prepare_texture() {
 std::shared_ptr<Perspective_camera> camera{};
 //std::shared_ptr<Orthographic_camera> camera{};
 
-std::shared_ptr<Trackball_camera_control> camera_control{};
-//std::shared_ptr<Game_camera_control> camera_control{};
+//std::shared_ptr<Trackball_camera_control> camera_control{};
+std::shared_ptr<Game_camera_control> camera_control{};
 
 void prepare_camera() {
 
@@ -146,7 +146,7 @@ void prepare_camera() {
 		0.1f, 1000.0f,
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f)
+		glm::vec3(1.0f, 0.0f, 0.0f)
 	);
 
 	// auto size = 10.0f;
@@ -154,11 +154,11 @@ void prepare_camera() {
 	// 	size, -size, -size, size, size, -size,
 	// 	glm::vec3(0.0f, 0.0f, 0.0f),
 	// 	glm::vec3(0.0f, 1.0f, 0.0f),
-	// 	glm::vec3(0.0f, 0.0f, 1.0f)
+	// 	glm::vec3(1.0f, 0.0f, 0.0f)
 	// );
 
-	camera_control = std::make_shared<Trackball_camera_control>(camera);
-	//camera_control = std::make_shared<Game_camera_control>(camera);
+	//camera_control = std::make_shared<Trackball_camera_control>(camera);
+	camera_control = std::make_shared<Game_camera_control>(camera);
 
 }
 

@@ -30,6 +30,12 @@ public:
     [[nodiscard]] double get_mouse_scroll_dx() const;
     [[nodiscard]] double get_mouse_scroll_dy() const;
 
+    void reset_scroll_dy();
+    void reset_scroll_dx();
+
+    void reset_mouse_dy();
+    void reset_mouse_dx();
+
 private:
     std::unordered_map<int, bool> m_key_scan_code{};
     std::unordered_map<int, bool> m_key_mods{};
