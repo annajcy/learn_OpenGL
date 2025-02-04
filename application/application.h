@@ -48,10 +48,10 @@ private:
 			glViewport(0, 0, width, height);
 		}
 	};
-	Keyboard_action m_keyboard_actions{
+	Keyboard_action m_keyboard_actions {
 		[&](int key, int scan_code, int action, int mods) {
-			std::cout << "application exit" << std::endl;
 			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+				std::cout << "application exit" << std::endl;
 				glfwSetWindowShouldClose(m_window, true);
 			}
 		}

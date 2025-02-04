@@ -6,8 +6,6 @@
 
 class Game_camera_control : public Camera_control
 {
-private:
-    
 
 public:
     explicit Game_camera_control(const std::shared_ptr<Camera> &camera);

@@ -27,82 +27,7 @@ GLuint vao, ebo;
 std::shared_ptr<Geometry> geo{};
 
 void prepare_geometry() {
-	geo = Geometry::create_box(2.0f);
-}
-
-void prepare_state() {
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-}
-
-void prepare_single_buffer() {
-	float positions[] = {
-			-0.5f, -0.5f, 1.0f,
-			0.5f, -0.5f, 1.0f,
-			-0.5f,  0.5f, 1.0f,
-			0.5f,  0.5f, 1.0f,
-	};
-
-	float colors[] = {
-			1.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 1.0f,
-			0.5f, 0.5f, 0.5f
-	};
-
-	float uvs[] = {
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		0.0f, 1.0f,
-		1.0f, 1.0f,
-	};
-
-	unsigned int indices[] = {
-		0, 1, 2,
-		2, 1, 3
-	};
-
-	glGenBuffers(1, &ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	GLuint pos_vbo = 0;
-	GLuint color_vbo = 0;
-	GLuint uv_vbo = 0;
-	GL_CALL(glGenBuffers(1, &pos_vbo));
-	GL_CALL(glGenBuffers(1, &color_vbo));
-	GL_CALL(glGenBuffers(1, &uv_vbo));
-
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, pos_vbo));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW));
-
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, color_vbo));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW));
-
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, uv_vbo));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(uvs), uvs, GL_STATIC_DRAW));
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	GLuint pos_vao = 0;
-	glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
-	glEnableVertexAttribArray(pos_vao);
-	glVertexAttribPointer(pos_vao, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<const void*>(0));
-
-	GLuint color_vao = 1;
-	glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
-	glEnableVertexAttribArray(color_vao);
-	glVertexAttribPointer(color_vao, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<const void*>(0));
-
-	GLuint uv_vao = 2;
-	glBindBuffer(GL_ARRAY_BUFFER, uv_vbo);
-	glEnableVertexAttribArray(uv_vao);
-	glVertexAttribPointer(uv_vao, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), reinterpret_cast<const void*>(0));
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
+	geo = Geometry::create_box(1.0f);
 }
 
 std::shared_ptr<Shader_program> shader_program{};
@@ -136,6 +61,7 @@ void prepare_texture() {
 	texture = std::make_shared<Texture>(image, false);
 
 	texture->attach_texture();
+
 	texture->set_wrap(Texture::Warp::S, Texture::Wrap_type::REPEAT);
 	texture->set_wrap(Texture::Warp::T, Texture::Wrap_type::REPEAT);
 	texture->set_filter(Texture::Filter::MIN, Texture::Filter_type::LINEAR_MIPMAP_LINEAR);
@@ -156,7 +82,7 @@ void prepare_camera() {
 		60.0f,
 		(float) App::get_instance()->width() / (float) App::get_instance()->height(),
 		0.1f, 1000.0f,
-		glm::vec3(0.0f, 0.0f, -5.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f),
 		glm::vec3(1.0f, 0.0f, 0.0f)
 	);
@@ -175,7 +101,7 @@ void prepare_camera() {
 }
 
 void render() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	shader_program->attach_program();
 
@@ -187,17 +113,6 @@ void render() {
 	shader_program->set_uniform_glm<glm::mat4>("projection", camera->get_projection_matrix());
 
 	texture->attach_texture();
-
-	// vao = geo->vao();
-	// ebo = geo->ebo();
-
-	// auto cnt = geo->indices_count();
-
-	// glBindVertexArray(vao);
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-
-	// glDrawElements(GL_TRIANGLES, cnt, GL_UNSIGNED_INT, 0);
-	// glBindVertexArray(0);
 
 	geo->attach_geometry();
 	geo->draw();
@@ -232,12 +147,10 @@ int main()
 		Input::get_instance()->update_scroll(xoffset, yoffset);
 	});
 
-	prepare_shader();
-	prepare_state();
 	prepare_geometry();
+	prepare_shader();
 	prepare_texture();
 	prepare_camera();
-
 
 	glViewport(0, 0, App::get_instance()->width(), App::get_instance()->height());
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
