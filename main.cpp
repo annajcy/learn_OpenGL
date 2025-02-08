@@ -35,6 +35,25 @@ std::shared_ptr<Mesh> mesh2{};
 std::shared_ptr<Light_setting> light_setting{};
 std::shared_ptr<Renderer> renderer{};
 
+void prepare_events() {
+	//upd io events
+	App::get_instance()->keyboard_actions().add([](int key, int scancode, int action, int mods) {
+		Input::get_instance()->update_key(key, scancode, action, mods);
+	});
+
+	App::get_instance()->cursor_actions().add([](double xpos, double ypos) {
+		Input::get_instance()->update_cursor_position(xpos, ypos);
+	});
+
+	App::get_instance()->mouse_actions().add([](int button, int action, int mods) {
+		Input::get_instance()->update_mouse_button(button, action, mods);
+	});
+
+	App::get_instance()->scroll_actions().add([](double xoffset, double yoffset) {
+		Input::get_instance()->update_scroll(xoffset, yoffset);
+	});
+}
+
 void prepare_texture() {
 	auto main_image = std::make_shared<Image>("assets/image/box.png");
 	auto specular_mask_image = std::make_shared<Image>("assets/image/sp_mask.png");
@@ -122,7 +141,6 @@ void prepare_mesh() {
 
 }
 
-
 void prepare_renderer() {
 	renderer = std::make_shared<Renderer>(camera, light_setting);
 	renderer->mesh_list().push_back(mesh1);
@@ -130,13 +148,6 @@ void prepare_renderer() {
 	renderer->init_state();
 }
 
-int cnt = 0;
-
-void render() {
-	
-	renderer->clear();
-	renderer->render();
-}
 
 int main()
 {
@@ -145,23 +156,7 @@ int main()
 		return -1;
 	}
 
-	//upd io events
-	App::get_instance()->keyboard_actions().add([](int key, int scancode, int action, int mods) {
-		Input::get_instance()->update_key(key, scancode, action, mods);
-	});
-
-	App::get_instance()->cursor_actions().add([](double xpos, double ypos) {
-		Input::get_instance()->update_cursor_position(xpos, ypos);
-	});
-
-	App::get_instance()->mouse_actions().add([](int button, int action, int mods) {
-		Input::get_instance()->update_mouse_button(button, action, mods);
-	});
-
-	App::get_instance()->scroll_actions().add([](double xoffset, double yoffset) {
-		Input::get_instance()->update_scroll(xoffset, yoffset);
-	});
-
+	prepare_events();
 	prepare_texture();
 	prepare_camera();
 	prepare_mesh();
@@ -171,12 +166,11 @@ int main()
 	glViewport(0, 0, App::get_instance()->width(), App::get_instance()->height());
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-	
-
 	while (App::get_instance()->is_active()) {
 		App::get_instance()->update();
 		camera_control->update();
-		render();
+		renderer->clear();
+		renderer->render();
 	}
 
 	Application::destroy();
