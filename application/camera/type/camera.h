@@ -27,8 +27,8 @@ public:
     [[nodiscard]] glm::vec3& up();
     [[nodiscard]] glm::vec3& right();
 
-    glm::mat4 get_view_matrix() const;
-    virtual glm::mat4 get_projection_matrix() const = 0;
+    glm::mat4 view_matrix() const;
+    virtual glm::mat4 projection_matrix() const = 0;
     virtual void adjust_scale(float delta_scale) = 0;
     void translate(const glm::vec3 &direction, float distance);
     void translate(const glm::vec3 &translation);

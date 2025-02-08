@@ -25,6 +25,6 @@ public:
 
     Perspective_camera(float fov, float aspect, float near_bound, float far_bound, const glm::vec3 &position, const glm::vec3 &up, const glm::vec3 &right);
     ~Perspective_camera();
-    glm::mat4 get_projection_matrix() const override;
+    glm::mat4 projection_matrix() const override;
     void adjust_scale(float delta_scale) override;
 };

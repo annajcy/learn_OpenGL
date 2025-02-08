@@ -67,7 +67,7 @@ float& Orthographic_camera::scale() {
     return m_scale;
 }
 
-glm::mat4 Orthographic_camera::get_projection_matrix() const {
+glm::mat4 Orthographic_camera::projection_matrix() const {
     return glm::ortho(m_left_bound * m_scale, m_right_bound * m_scale, m_down_bound * m_scale, m_up_bound * m_scale, m_near_bound, m_far_bound );
 }
 

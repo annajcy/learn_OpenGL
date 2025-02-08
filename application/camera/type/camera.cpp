@@ -22,7 +22,7 @@ Camera::~Camera() = default;
 [[nodiscard]] glm::vec3& Camera::right() { return m_right; }
 
 
-glm::mat4 Camera::get_view_matrix() const {
+glm::mat4 Camera::view_matrix() const {
     glm::vec3 center = m_position + front();
     return glm::lookAt(m_position, center, m_up);
 }

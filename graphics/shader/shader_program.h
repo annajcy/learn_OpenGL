@@ -2,6 +2,7 @@
 
 #include "global/core.h"
 #include "shader_code.h"
+#include "utils/string_utils.h"
 #include <vector>
 #include <memory>
 
@@ -42,14 +43,18 @@ public:
             glUniform3fv(location, 1, glm::value_ptr(value));
         } else if constexpr (std::is_same<T, glm::vec4>::value) {
             glUniform4fv(location, 1, glm::value_ptr(value));
+        } else if constexpr (std::is_same<T, glm::ivec2>::value) {
+            glUniform2iv(location, 1, glm::value_ptr(value));
+        } else if constexpr (std::is_same<T, glm::ivec3>::value) {
+            glUniform3iv(location, 1, glm::value_ptr(value));
+        } else if constexpr (std::is_same<T, glm::ivec4>::value) {
+            glUniform4iv(location, 1, glm::value_ptr(value));
         } else if constexpr (std::is_same<T, glm::mat2>::value) {
             glUniformMatrix2fv(location, 1, GL_FALSE, glm::value_ptr(value));
         } else if constexpr (std::is_same<T, glm::mat3>::value) {
             glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
         } else if constexpr (std::is_same<T, glm::mat4>::value) {
             glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
-        } else {
-            std::cerr << "Unsupported uniform type" << std::endl;
         }
     }
 
@@ -58,4 +63,6 @@ public:
 
     [[nodiscard]] GLuint get_id() const;
     [[nodiscard]] const std::vector<std::shared_ptr<Shader_code>>& get_shaders() const;
+
+    static std::shared_ptr<Shader_program> create_vs_fs_program(const std::string& vs_path, const std::string &fs_path);
 };

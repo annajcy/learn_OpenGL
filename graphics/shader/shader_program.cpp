@@ -4,7 +4,6 @@ Shader_program::Shader_program() {
     init();
 };
 
-
 Shader_program::~Shader_program() {
     destroy();
 }
@@ -50,3 +49,23 @@ void Shader_program::detach_program() {
 
 [[nodiscard]] GLuint Shader_program::get_id() const { return m_program_id; }
 [[nodiscard]] const std::vector<std::shared_ptr<Shader_code>>& Shader_program::get_shaders() const { return m_shaders; }
+
+std::shared_ptr<Shader_program> Shader_program::create_vs_fs_program(const std::string& vs_path, const std::string &fs_path) {
+    auto program = std::make_shared<Shader_program>();
+
+    std::shared_ptr<Shader_code> vs = std::make_shared<Shader_code>(utils::load_from_file(vs_path), Shader_code::Shader_type::VERTEX);
+    vs->compile();
+    vs->check_compile_error();
+
+    std::shared_ptr<Shader_code> fs = std::make_shared<Shader_code>(utils::load_from_file(fs_path), Shader_code::Shader_type::FRAGMENT);
+    fs->compile();
+    fs->check_compile_error();
+
+    program->attach_shader(vs);
+    program->attach_shader(fs);
+    
+    program->link();
+    program->check_link_error();
+
+    return program;
+}

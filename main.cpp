@@ -6,6 +6,7 @@
 #include "graphics/shader/shader_program.h"
 #include "graphics/texture.h"
 #include "graphics/geometry.h"
+#include "graphics/renderer.h"
 
 #include "application/application.h"
 #include "application/image.h"
@@ -22,133 +23,40 @@
 #include <memory>
 #include <iostream>
 
-GLuint vao, ebo;
-
-std::shared_ptr<Geometry> geo{};
-
-void prepare_geometry() {
-	geo = Geometry::create_box(2.0f);
-}
-
-void prepare_state() {
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-}
-
-void prepare_single_buffer() {
-	float positions[] = {
-			-0.5f, -0.5f, 1.0f,
-			0.5f, -0.5f, 1.0f,
-			-0.5f,  0.5f, 1.0f,
-			0.5f,  0.5f, 1.0f,
-	};
-
-	float colors[] = {
-			1.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 1.0f,
-			0.5f, 0.5f, 0.5f
-	};
-
-	float uvs[] = {
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		0.0f, 1.0f,
-		1.0f, 1.0f,
-	};
-
-	unsigned int indices[] = {
-		0, 1, 2,
-		2, 1, 3
-	};
-
-	glGenBuffers(1, &ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	GLuint pos_vbo = 0;
-	GLuint color_vbo = 0;
-	GLuint uv_vbo = 0;
-	GL_CALL(glGenBuffers(1, &pos_vbo));
-	GL_CALL(glGenBuffers(1, &color_vbo));
-	GL_CALL(glGenBuffers(1, &uv_vbo));
-
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, pos_vbo));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW));
-
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, color_vbo));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW));
-
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, uv_vbo));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(uvs), uvs, GL_STATIC_DRAW));
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	GLuint pos_vao = 0;
-	glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
-	glEnableVertexAttribArray(pos_vao);
-	glVertexAttribPointer(pos_vao, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<const void*>(0));
-
-	GLuint color_vao = 1;
-	glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
-	glEnableVertexAttribArray(color_vao);
-	glVertexAttribPointer(color_vao, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<const void*>(0));
-
-	GLuint uv_vao = 2;
-	glBindBuffer(GL_ARRAY_BUFFER, uv_vbo);
-	glEnableVertexAttribArray(uv_vao);
-	glVertexAttribPointer(uv_vao, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), reinterpret_cast<const void*>(0));
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-}
-
-std::shared_ptr<Shader_program> shader_program{};
-
-void prepare_shader() {
-
-	std::string vertex_shader_code = utils::load_from_file("assets/shaders/transform/vertex.glsl");
-	std::string fragment_shader_code = utils::load_from_file("assets/shaders/transform/fragment.glsl");
-
-	std::shared_ptr<Shader_code> vertex_shader = std::make_shared<Shader_code>(vertex_shader_code, Shader_code::Shader_type::VERTEX);
-	vertex_shader->compile();
-	vertex_shader->check_compile_error();
-
-	std::shared_ptr<Shader_code> fragment_shader = std::make_shared<Shader_code>(fragment_shader_code, Shader_code::Shader_type::FRAGMENT);
-	fragment_shader->compile();
-	fragment_shader->check_compile_error();
-
-	shader_program = std::make_shared<Shader_program>();
-	shader_program->attach_shader(vertex_shader);
-	shader_program->attach_shader(fragment_shader);
-	
-	shader_program->link();
-	shader_program->check_link_error();
-}
-
-std::shared_ptr<Image> image {};
-std::shared_ptr<Texture> texture {};
-
-void prepare_texture() {
-	image = std::make_shared<Image>("assets/image/goku.jpg");
-	texture = std::make_shared<Texture>(image, false);
-
-	texture->attach_texture();
-	texture->set_wrap(Texture::Warp::S, Texture::Wrap_type::REPEAT);
-	texture->set_wrap(Texture::Warp::T, Texture::Wrap_type::REPEAT);
-	texture->set_filter(Texture::Filter::MIN, Texture::Filter_type::LINEAR_MIPMAP_LINEAR);
-	texture->set_filter(Texture::Filter::MAG, Texture::Filter_type::LINEAR);
-
-	texture->detach_texture();
-}
+std::shared_ptr<Texture> main_texture {};
+std::shared_ptr<Texture> specular_mask_texture {};
 
 std::shared_ptr<Perspective_camera> camera{};
-//std::shared_ptr<Orthographic_camera> camera{};
+std::shared_ptr<Trackball_camera_control> camera_control{};
 
-//std::shared_ptr<Trackball_camera_control> camera_control{};
-std::shared_ptr<Game_camera_control> camera_control{};
+std::shared_ptr<Mesh> mesh1{};
+std::shared_ptr<Mesh> mesh2{};
+
+std::shared_ptr<Light_setting> light_setting{};
+std::shared_ptr<Renderer> renderer{};
+
+void prepare_texture() {
+	auto main_image = std::make_shared<Image>("assets/image/box.png");
+	auto specular_mask_image = std::make_shared<Image>("assets/image/sp_mask.png");
+
+	main_texture = std::make_shared<Texture>(main_image, 0, false);
+	specular_mask_texture = std::make_shared<Texture>(specular_mask_image, 1, false);
+
+	main_texture->attach_texture();
+	main_texture->set_wrap(Texture::Warp::S, Texture::Wrap_type::REPEAT);
+	main_texture->set_wrap(Texture::Warp::T, Texture::Wrap_type::REPEAT);
+	main_texture->set_filter(Texture::Filter::MIN, Texture::Filter_type::LINEAR_MIPMAP_LINEAR);
+	main_texture->set_filter(Texture::Filter::MAG, Texture::Filter_type::LINEAR);
+	main_texture->detach_texture();
+
+	specular_mask_texture->attach_texture();
+	specular_mask_texture->set_wrap(Texture::Warp::S, Texture::Wrap_type::REPEAT);
+	specular_mask_texture->set_wrap(Texture::Warp::T, Texture::Wrap_type::REPEAT);
+	specular_mask_texture->set_filter(Texture::Filter::MIN, Texture::Filter_type::LINEAR_MIPMAP_LINEAR);
+	specular_mask_texture->set_filter(Texture::Filter::MAG, Texture::Filter_type::LINEAR);
+	specular_mask_texture->detach_texture();
+
+}
 
 void prepare_camera() {
 
@@ -161,51 +69,73 @@ void prepare_camera() {
 		glm::vec3(1.0f, 0.0f, 0.0f)
 	);
 
-	// auto size = 10.0f;
-	// camera = std::make_shared<Orthographic_camera>(
-	// 	size, -size, -size, size, size, -size,
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	glm::vec3(0.0f, 1.0f, 0.0f),
-	// 	glm::vec3(1.0f, 0.0f, 0.0f)
-	// );
-
-	//camera_control = std::make_shared<Trackball_camera_control>(camera);
-	camera_control = std::make_shared<Game_camera_control>(camera);
+	camera_control = std::make_shared<Trackball_camera_control>(camera);
 
 }
 
+void prepare_lights() {
+	
+	auto directional_light = std::make_shared<Directional_light>(); 
+	directional_light->direction() = glm::vec3(0.0, 1.0, 0.0);
+	
+	auto spot_light = std::make_shared<Spot_light>();
+	spot_light->position() = glm::vec3(0.0f, 0.0f, 2.0f);
+	spot_light->direction() = glm::vec3(0.0, 0.0f, -1.0f);
+	spot_light->inner_angle() = 5.0f;
+	spot_light->outer_angle() = 10.0f;
+	spot_light->color() = glm::vec3(1.0, 1.0, 0.0);
+
+	auto point_light_1 = std::make_shared<Point_light>();
+	point_light_1->position() = glm::vec3(1.0f, 0.0f, 0.0f);
+	point_light_1->color() = glm::vec3(1.0f, 0.0f, 0.0f);
+
+	auto point_light_2 = std::make_shared<Point_light>();
+	point_light_2->position() = glm::vec3(0.0f, 1.0f, 0.0f);
+	point_light_2->color() = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	auto point_light_3 = std::make_shared<Point_light>();
+	point_light_3->position() = glm::vec3(0.0f, 0.0f, -1.0f);
+	point_light_3->color() = glm::vec3(0.0f, 0.0f, 1.0f);
+
+	auto ambient_light = std::make_shared<Ambient_light>();
+	ambient_light->intensity() = 0.3f;
+
+	light_setting = std::make_shared<Light_setting>(std::vector<std::shared_ptr<Light>> {
+		ambient_light, directional_light, point_light_1, point_light_2, point_light_3, spot_light
+	});
+}
+
+void prepare_mesh() {
+	auto phong_material = std::make_shared<Phong_material>();
+	phong_material->main_texture() = main_texture;
+	phong_material->specular_mask_texture() = specular_mask_texture;
+
+	auto white_material = std::make_shared<White_material>();
+
+	auto box = Geometry::create_box(1.0f);
+	auto sphere = Geometry::create_sphere(0.1f, 60, 60);
+
+	mesh1 = std::make_shared<Mesh>(box, phong_material);
+	mesh2 = std::make_shared<Mesh>(sphere, white_material);
+
+	mesh2->position() = glm::vec3(0.0, 0.0, 2.0);
+
+}
+
+
+void prepare_renderer() {
+	renderer = std::make_shared<Renderer>(camera, light_setting);
+	renderer->mesh_list().push_back(mesh1);
+	renderer->mesh_list().push_back(mesh2);
+	renderer->init_state();
+}
+
+int cnt = 0;
+
 void render() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	shader_program->attach_program();
-
-	shader_program->set_uniform<float>("time", static_cast<float>(glfwGetTime()));
-	shader_program->set_uniform<int>("textureSampler0", 0);
-	shader_program->set_uniform_glm<glm::vec2>("resolution", glm::vec2(App::get_instance()->width(), App::get_instance()->height()));
-	shader_program->set_uniform_glm<glm::mat4>("model", glm::identity<glm::mat4>());
-	shader_program->set_uniform_glm<glm::mat4>("view", camera->get_view_matrix());
-	shader_program->set_uniform_glm<glm::mat4>("projection", camera->get_projection_matrix());
-
-	texture->attach_texture();
-
-	// vao = geo->vao();
-	// ebo = geo->ebo();
-
-	// auto cnt = geo->indices_count();
-
-	// glBindVertexArray(vao);
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-
-	// glDrawElements(GL_TRIANGLES, cnt, GL_UNSIGNED_INT, 0);
-	// glBindVertexArray(0);
-
-	geo->attach_geometry();
-	geo->draw();
-	geo->detach_geometry();
-
-	texture->detach_texture();
-
-	shader_program->detach_program();
+	
+	renderer->clear();
+	renderer->render();
 }
 
 int main()
@@ -232,15 +162,16 @@ int main()
 		Input::get_instance()->update_scroll(xoffset, yoffset);
 	});
 
-	prepare_shader();
-	prepare_state();
-	prepare_geometry();
 	prepare_texture();
 	prepare_camera();
-
+	prepare_mesh();
+	prepare_lights();
+	prepare_renderer();
 
 	glViewport(0, 0, App::get_instance()->width(), App::get_instance()->height());
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+	
 
 	while (App::get_instance()->is_active()) {
 		App::get_instance()->update();
@@ -252,3 +183,5 @@ int main()
 
 	return 0;
 }
+
+

@@ -27,7 +27,12 @@ GLuint vao, ebo;
 std::shared_ptr<Geometry> geo{};
 
 void prepare_geometry() {
-	geo = Geometry::create_box(1.0f);
+	geo = Geometry::create_plane(2.0f, 2.0f);
+}
+
+void prepare_state() {
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 }
 
 std::shared_ptr<Shader_program> shader_program{};
@@ -61,7 +66,6 @@ void prepare_texture() {
 	texture = std::make_shared<Texture>(image, false);
 
 	texture->attach_texture();
-
 	texture->set_wrap(Texture::Warp::S, Texture::Wrap_type::REPEAT);
 	texture->set_wrap(Texture::Warp::T, Texture::Wrap_type::REPEAT);
 	texture->set_filter(Texture::Filter::MIN, Texture::Filter_type::LINEAR_MIPMAP_LINEAR);
@@ -71,10 +75,7 @@ void prepare_texture() {
 }
 
 std::shared_ptr<Perspective_camera> camera{};
-//std::shared_ptr<Orthographic_camera> camera{};
-
-//std::shared_ptr<Trackball_camera_control> camera_control{};
-std::shared_ptr<Game_camera_control> camera_control{};
+std::shared_ptr<Trackball_camera_control> camera_control{};
 
 void prepare_camera() {
 
@@ -82,26 +83,17 @@ void prepare_camera() {
 		60.0f,
 		(float) App::get_instance()->width() / (float) App::get_instance()->height(),
 		0.1f, 1000.0f,
-		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, -5.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f),
 		glm::vec3(1.0f, 0.0f, 0.0f)
 	);
 
-	// auto size = 10.0f;
-	// camera = std::make_shared<Orthographic_camera>(
-	// 	size, -size, -size, size, size, -size,
-	// 	glm::vec3(0.0f, 0.0f, 0.0f),
-	// 	glm::vec3(0.0f, 1.0f, 0.0f),
-	// 	glm::vec3(1.0f, 0.0f, 0.0f)
-	// );
-
-	//camera_control = std::make_shared<Trackball_camera_control>(camera);
-	camera_control = std::make_shared<Game_camera_control>(camera);
+	camera_control = std::make_shared<Trackball_camera_control>(camera);
 
 }
 
 void render() {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	shader_program->attach_program();
 
@@ -109,11 +101,11 @@ void render() {
 	shader_program->set_uniform<int>("textureSampler0", 0);
 	shader_program->set_uniform_glm<glm::vec2>("resolution", glm::vec2(App::get_instance()->width(), App::get_instance()->height()));
 	shader_program->set_uniform_glm<glm::mat4>("model", glm::identity<glm::mat4>());
-	shader_program->set_uniform_glm<glm::mat4>("view", camera->get_view_matrix());
-	shader_program->set_uniform_glm<glm::mat4>("projection", camera->get_projection_matrix());
+	shader_program->set_uniform_glm<glm::mat4>("view", camera->view_matrix());
+	shader_program->set_uniform_glm<glm::mat4>("projection", camera->projection_matrix());
 
 	texture->attach_texture();
-
+	
 	geo->attach_geometry();
 	geo->draw();
 	geo->detach_geometry();
@@ -147,10 +139,12 @@ int main()
 		Input::get_instance()->update_scroll(xoffset, yoffset);
 	});
 
-	prepare_geometry();
 	prepare_shader();
+	prepare_state();
+	prepare_geometry();
 	prepare_texture();
 	prepare_camera();
+
 
 	glViewport(0, 0, App::get_instance()->width(), App::get_instance()->height());
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
