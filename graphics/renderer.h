@@ -28,6 +28,7 @@ public:
     void init_state();
     void clear();
     void render();
+    void set_clear_color(const glm::vec3& color);
 
 private:
     std::shared_ptr<Shader_program> pick_shader(Material::Material_type type);

@@ -35,19 +35,15 @@ public:
 	~Application();
 
 private:
-	int m_width{0};
-	int m_height{0};
 	GLFWwindow* m_window{nullptr};
 
 	Scroll_action m_scroll_actions{};
 	Cursor_action m_cursor_actions{};
 	Mouse_action m_mouse_actions{};
 	Resize_action m_resize_actions{
-		[&](int width, int height) {
+		[](int width, int height) {
 			std::cout << "glViewport resize" << std::endl;
 			glViewport(0, 0, width, height);
-			m_width = width;
-			m_height = height;
 		}
 	};
 	Keyboard_action m_keyboard_actions {

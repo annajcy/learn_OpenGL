@@ -18,6 +18,10 @@ std::vector<std::shared_ptr<Mesh>>& Renderer::mesh_list() {
     return m_mesh_list; 
 }
 
+void Renderer::set_clear_color(const glm::vec3& color) {
+    glClearColor(color.r, color.g, color.b, 1.0f);
+}
+
 void Renderer::init_state() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);

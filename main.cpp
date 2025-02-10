@@ -39,6 +39,8 @@ std::shared_ptr<Mesh> mesh2{};
 std::shared_ptr<Light_setting> light_setting{};
 std::shared_ptr<Renderer> renderer{};
 
+glm::vec3 clear_color{};
+
 void prepare_imgui() {
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
@@ -158,6 +160,7 @@ void prepare_renderer() {
 	renderer->mesh_list().push_back(mesh1);
 	renderer->mesh_list().push_back(mesh2);
 	renderer->init_state();
+	renderer->set_clear_color(clear_color);
 }
 
 void render_gui() {
@@ -167,18 +170,17 @@ void render_gui() {
 
 	ImGui::Begin("Hello world");
 
-	ImGui::Text("Color");
-	ImGui::Button("btn", ImVec2(40, 20));
+	ImGui::ColorEdit3("clear color", glm::value_ptr(clear_color));
+
+	if (ImGui::Button("change clear color", ImVec2(50, 20))) {
+		renderer->set_clear_color(clear_color);
+	}
 
 	ImGui::End();
 
 	ImGui::Render();
 
-	//获取当前窗体的宽高
-	int display_w, display_h;
-	glfwGetFramebufferSize(App::get_instance()->window(), &display_w, &display_h);
-	//重置视口大小
-	glViewport(0, 0, display_w, display_h);
+	glViewport(0, 0, App::get_instance()->width(), App::get_instance()->height());
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	
 }
@@ -199,7 +201,6 @@ int main()
 	prepare_renderer();
 
 	glViewport(0, 0, App::get_instance()->width(), App::get_instance()->height());
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 	while (App::get_instance()->is_active()) {
 		App::get_instance()->update();
