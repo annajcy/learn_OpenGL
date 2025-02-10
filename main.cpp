@@ -19,6 +19,10 @@
 
 #include "utils/string_utils.h"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include <string>
 #include <memory>
 #include <iostream>
@@ -34,6 +38,14 @@ std::shared_ptr<Mesh> mesh2{};
 
 std::shared_ptr<Light_setting> light_setting{};
 std::shared_ptr<Renderer> renderer{};
+
+void prepare_imgui() {
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+
+	ImGui_ImplGlfw_InitForOpenGL(App::get_instance()->window(), true);
+	ImGui_ImplOpenGL3_Init("#version 460");
+}
 
 void prepare_events() {
 	//upd io events
@@ -148,6 +160,28 @@ void prepare_renderer() {
 	renderer->init_state();
 }
 
+void render_gui() {
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("Hello world");
+
+	ImGui::Text("Color");
+	ImGui::Button("btn", ImVec2(40, 20));
+
+	ImGui::End();
+
+	ImGui::Render();
+
+	//获取当前窗体的宽高
+	int display_w, display_h;
+	glfwGetFramebufferSize(App::get_instance()->window(), &display_w, &display_h);
+	//重置视口大小
+	glViewport(0, 0, display_w, display_h);
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	
+}
 
 int main()
 {
@@ -156,6 +190,7 @@ int main()
 		return -1;
 	}
 
+	prepare_imgui();
 	prepare_events();
 	prepare_texture();
 	prepare_camera();
@@ -171,6 +206,7 @@ int main()
 		camera_control->update();
 		renderer->clear();
 		renderer->render();
+		render_gui();
 	}
 
 	Application::destroy();

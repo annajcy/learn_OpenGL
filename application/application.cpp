@@ -94,3 +94,7 @@ void Application::update() {
 	glfwSwapBuffers(m_window);
 }
 
+GLFWwindow* Application::window() const {
+	return m_window;
+}
+
