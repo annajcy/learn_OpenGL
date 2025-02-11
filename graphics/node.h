@@ -2,7 +2,7 @@
 
 #include "global/core.h"
 
-class Node
+class Node : public std::enable_shared_from_this<Node>
 {
 public:
     enum class Node_type {
@@ -19,6 +19,9 @@ protected:
     glm::vec3 m_scale = glm::one<glm::vec3>();
     glm::vec3 m_rotation_euler = glm::zero<glm::vec3>();
 
+    std::vector<std::shared_ptr<Node>> m_children{};
+    std::shared_ptr<Node> m_parent{};
+
 public:
     explicit Node(Node_type type);
     virtual ~Node() = default;
@@ -27,6 +30,12 @@ public:
     glm::vec3& scale();
     glm::vec3& position();
 
+    std::shared_ptr<Node>& parent();
+    std::vector<std::shared_ptr<Node>>& children();
+
+    void add_child(const std::shared_ptr<Node>& node);
+    void erase_child(const std::shared_ptr<Node> &node);
+    void clear_children();
     [[nodiscard]] Node_type type() const;
     [[nodiscard]] glm::vec3 position() const;
     [[nodiscard]] glm::vec3 rotation_euler() const;

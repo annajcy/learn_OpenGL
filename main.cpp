@@ -23,6 +23,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "assimp/Importer.hpp"
+
 #include <string>
 #include <memory>
 #include <iostream>
@@ -38,6 +40,8 @@ std::shared_ptr<Mesh> mesh2{};
 
 std::shared_ptr<Light_setting> light_setting{};
 std::shared_ptr<Renderer> renderer{};
+
+std::shared_ptr<Scene> scene{};
 
 glm::vec3 clear_color{};
 
@@ -153,12 +157,14 @@ void prepare_mesh() {
 
 	mesh2->position() = glm::vec3(0.0, 0.0, 2.0);
 
+	mesh1->add_child(mesh2);
+
+	scene = std::make_shared<Scene>();
+	scene->add_child(mesh1);
 }
 
 void prepare_renderer() {
-	renderer = std::make_shared<Renderer>(camera, light_setting);
-	renderer->mesh_list().push_back(mesh1);
-	renderer->mesh_list().push_back(mesh2);
+	renderer = std::make_shared<Renderer>(scene, camera, light_setting);
 	renderer->init_state();
 	renderer->set_clear_color(clear_color);
 }
@@ -169,17 +175,16 @@ void render_gui() {
 	ImGui::NewFrame();
 
 	ImGui::Begin("Hello world");
+	{
+		ImGui::ColorEdit3("clear color", glm::value_ptr(clear_color));
 
-	ImGui::ColorEdit3("clear color", glm::value_ptr(clear_color));
-
-	if (ImGui::Button("change clear color", ImVec2(50, 20))) {
-		renderer->set_clear_color(clear_color);
+		if (ImGui::Button("change clear color", ImVec2(50, 20))) {
+			renderer->set_clear_color(clear_color);
+		}
 	}
-
 	ImGui::End();
 
 	ImGui::Render();
-
 	glViewport(0, 0, App::get_instance()->width(), App::get_instance()->height());
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	
@@ -205,6 +210,9 @@ int main()
 	while (App::get_instance()->is_active()) {
 		App::get_instance()->update();
 		camera_control->update();
+
+		mesh1->rotation_euler().x += 2.0f;
+
 		renderer->clear();
 		renderer->render();
 		render_gui();

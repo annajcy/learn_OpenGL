@@ -13,6 +13,7 @@ set(GLFW_PATH ${CMAKE_SOURCE_DIR}/third_party/glfw)
 set(GLM_PATH ${CMAKE_SOURCE_DIR}/third_party/glm)
 set(STB_IMAGE_PATH ${CMAKE_SOURCE_DIR}/third_party/stb_image)
 set(IMGUI_PATH ${CMAKE_SOURCE_DIR}/third_party/imgui)
+set(ASSIMP_PATH ${CMAKE_SOURCE_DIR}/third_party/assimp)
 
 file(GLOB_RECURSE GLAD_SRC ${GLAD_PATH}/src/*.cpp)
 file(GLOB_RECURSE IMGUI_SRC ${IMGUI_PATH}/src/*.cpp)
@@ -37,10 +38,17 @@ include_directories(
     ${STB_IMAGE_PATH}/include
     ${GLM_PATH}/include
     ${IMGUI_PATH}/include
+    ${ASSIMP_PATH}/include
 )
+
+add_library(glfw IMPORTED STATIC)
+set_target_properties(glfw PROPERTIES IMPORTED_LOCATION ${GLFW_PATH}/lib64/libglfw3.a)
 
 add_library(glm IMPORTED STATIC)
 set_target_properties(glm PROPERTIES IMPORTED_LOCATION ${GLM_PATH}/lib64/libglm.a)
+
+add_library(assimp IMPORTED STATIC)
+set_target_properties(assimp PROPERTIES IMPORTED_LOCATION ${ASSIMP_PATH}/lib64/libassimp.a)
 
 set(SOURCES
     ${APPLICATION_SRC}
@@ -59,7 +67,8 @@ add_executable(learn_opengl ${SOURCES})
 target_link_libraries(learn_opengl 
 glfw 
 glm
+assimp
 ${OPENGL_LIBRARIES} 
 )
-     
-    
+
+
