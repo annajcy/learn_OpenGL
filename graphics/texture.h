@@ -6,6 +6,23 @@
 
 class Texture {
 public:
+    static std::unordered_map<std::string, std::shared_ptr<Texture>> texture_cache;
+
+    static std::shared_ptr<Texture> create_texture_from_path(const std::string& id, const std::string& image_path, unsigned int unit = 0, bool set_default_warp_filter = true) {
+        if (texture_cache.contains(id)) return texture_cache.at(id);
+        auto image = std::make_shared<Image>(image_path);
+        auto texture = std::make_shared<Texture>(image, unit, set_default_warp_filter);
+        texture_cache.insert({id, texture});
+        return texture;
+    }
+
+    static std::shared_ptr<Texture> create_texture_from_memory(const std::string& id, unsigned char* data, int data_size, unsigned int unit = 0, bool set_default_warp_filter = true) {
+        if (texture_cache.contains(id)) return texture_cache.at(id);
+        auto image = std::make_shared<Image>(data, data_size);
+        auto texture = std::make_shared<Texture>(image, unit, set_default_warp_filter);
+        texture_cache.insert({id, texture});
+        return texture;
+    }
 
     enum class Wrap_type {
         REPEAT,
@@ -38,7 +55,6 @@ public:
 
 private:
     GLuint m_texture_id{};
-    std::shared_ptr<Image> m_image{};
     unsigned int m_unit{};
 public:
     Texture(const std::shared_ptr<Image> &image, unsigned int unit = 0, bool set_default_warp_filter = true);

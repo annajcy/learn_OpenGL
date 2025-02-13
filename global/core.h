@@ -10,6 +10,14 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/string_cast.hpp"
 
+#include "glm/gtx/quaternion.hpp"
+#include "glm/gtx/matrix_decompose.hpp"
+#include "glm/gtx/euler_angles.hpp"
+
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
+
 #include <iostream>
 #include <string>
 #include <vector>

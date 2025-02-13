@@ -11,6 +11,7 @@
 #include "application/application.h"
 #include "application/image.h"
 #include "application/input.h"
+#include "application/assimp_loader.h"
 
 #include "application/camera/control/trackball_camera_control.h"
 #include "application/camera/control/game_camera_control.h"
@@ -35,6 +36,7 @@ std::shared_ptr<Texture> specular_mask_texture {};
 std::shared_ptr<Perspective_camera> camera{};
 std::shared_ptr<Trackball_camera_control> camera_control{};
 
+std::shared_ptr<Node> model{};
 std::shared_ptr<Mesh> mesh1{};
 std::shared_ptr<Mesh> mesh2{};
 
@@ -163,6 +165,15 @@ void prepare_mesh() {
 	scene->add_child(mesh1);
 }
 
+void prepare_model() {
+	model = Assimp_loader::load("assets/model/test/test.fbx");
+	//model = Assimp_loader::load("assets/model/monster/monster.fbx");
+	//model = Assimp_loader::load("assets/model/backpack/backpack.obj");
+
+	scene = std::make_shared<Scene>();
+	scene->add_child(model);
+}
+
 void prepare_renderer() {
 	renderer = std::make_shared<Renderer>(scene, camera, light_setting);
 	renderer->init_state();
@@ -201,7 +212,8 @@ int main()
 	prepare_events();
 	prepare_texture();
 	prepare_camera();
-	prepare_mesh();
+	//prepare_mesh();
+	prepare_model();
 	prepare_lights();
 	prepare_renderer();
 
@@ -211,8 +223,8 @@ int main()
 		App::get_instance()->update();
 		camera_control->update();
 
-		mesh1->rotation_euler().x += 2.0f;
-
+		//mesh1->rotation_euler().x += 2.0f;
+		
 		renderer->clear();
 		renderer->render();
 		render_gui();

@@ -47,8 +47,12 @@ set_target_properties(glfw PROPERTIES IMPORTED_LOCATION ${GLFW_PATH}/lib64/libgl
 add_library(glm IMPORTED STATIC)
 set_target_properties(glm PROPERTIES IMPORTED_LOCATION ${GLM_PATH}/lib64/libglm.a)
 
+add_library(zlib IMPORTED STATIC)
+set_target_properties(zlib PROPERTIES IMPORTED_LOCATION ${ASSIMP_PATH}/lib64/libzlibstatic.a)
+
 add_library(assimp IMPORTED STATIC)
 set_target_properties(assimp PROPERTIES IMPORTED_LOCATION ${ASSIMP_PATH}/lib64/libassimp.a)
+
 
 set(SOURCES
     ${APPLICATION_SRC}
@@ -68,7 +72,9 @@ target_link_libraries(learn_opengl
 glfw 
 glm
 assimp
+zlib
 ${OPENGL_LIBRARIES} 
 )
+
 
 

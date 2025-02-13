@@ -23,7 +23,7 @@ protected:
     std::shared_ptr<Node> m_parent{};
 
 public:
-    explicit Node(Node_type type);
+    explicit Node(Node_type type = Node_type::OBJECT);
     virtual ~Node() = default;
 
     glm::vec3& rotation_euler();

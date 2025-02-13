@@ -50,12 +50,26 @@ public:
         glDrawElements(GL_TRIANGLES, m_indices_count, GL_UNSIGNED_INT, 0);
     }
 
-    void init(
-        float* positions, int position_size, 
-        float *uvs, int uv_size, 
-        float* normals, int normal_size, 
-        unsigned int* indices, int index_size, int indices_count) {
+    Geometry() = default;
 
+    Geometry(
+        const std::vector<float> &positions,
+        const std::vector<float> &normals,
+        const std::vector<float> &uvs,
+        const std::vector<unsigned int> &indices
+    ) {
+        init(positions.data(), positions.size() * sizeof(float), 
+            uvs.data(), uvs.size() * sizeof(float), 
+            normals.data(), normals.size() * sizeof(float), 
+            indices.data(), indices.size() * sizeof(unsigned int), indices.size());
+    }
+
+    void init(
+        const float* positions, int position_size, 
+        const float* uvs, int uv_size, 
+        const float* normals, int normal_size, 
+        const unsigned int* indices, int indices_size, int indices_count
+    ) {
 
         m_position_location = 0;
         m_uv_location = 1;
@@ -76,7 +90,7 @@ public:
 
         glGenBuffers(1, &m_ebo);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_size, indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size, indices, GL_STATIC_DRAW);
 
         glGenVertexArrays(1, &m_vao);
         glBindVertexArray(m_vao);
@@ -99,7 +113,6 @@ public:
 
     }
 
-    Geometry() = default;
     ~Geometry() {
         if (m_ebo)   glDeleteBuffers(1, &m_ebo);
         if (m_vao)   glDeleteVertexArrays(1, &m_vao);

@@ -1,5 +1,7 @@
 #include "texture.h"
 
+std::unordered_map<std::string, std::shared_ptr<Texture>> Texture::texture_cache{};
+
 Texture::Texture(const std::shared_ptr<Image> &image, unsigned int unit, bool set_default_warp_filter) {
     init(image, unit, set_default_warp_filter);
 }
@@ -9,14 +11,13 @@ Texture::~Texture() {
 }
 
 void Texture::init(const std::shared_ptr<Image> &image, unsigned int unit, bool set_default_warp_filter) {
-    m_image = image;
     m_unit = unit;
 
     glGenTextures(1, &m_texture_id);
 
     attach_texture();
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_image->width(), m_image->height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, m_image->data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width(), image->height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data());
     glGenerateMipmap(GL_TEXTURE_2D);
 
     if (!set_default_warp_filter) {
