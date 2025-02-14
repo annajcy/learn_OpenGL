@@ -10,8 +10,6 @@ private:
     float m_down_bound{};
     float m_left_bound{};
     float m_right_bound{};
-    float m_near_bound{};
-    float m_far_bound{};
 
     float m_zoom{1.0};
 
@@ -21,16 +19,14 @@ public:
     [[nodiscard]] float down_bound() const;
     [[nodiscard]] float left_bound() const;
     [[nodiscard]] float right_bound() const;
-    [[nodiscard]] float near_bound() const;
-    [[nodiscard]] float far_bound() const;
+    
     [[nodiscard]] float zoom() const;
 
     float& up_bound();
     float& down_bound();
     float& left_bound();
     float& right_bound();
-    float& near_bound();
-    float& far_bound();
+    
     float& zoom();
 
 

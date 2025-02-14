@@ -20,6 +20,7 @@ void Renderer::init_state() {
 }
 
 void Renderer::clear() {
+    init_state();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
