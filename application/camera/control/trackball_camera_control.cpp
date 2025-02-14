@@ -1,9 +1,6 @@
 #include "trackball_camera_control.h"
 #include "application/input.h"
 
-#include <cmath>
-#include <iostream>
-
 Trackball_camera_control::Trackball_camera_control(const std::shared_ptr<Camera> &camera)
     : Camera_control(camera) {}
 

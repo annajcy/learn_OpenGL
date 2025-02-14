@@ -2,7 +2,6 @@
 
 #include "camera_control.h"
 #include "application/input.h"
-#include <memory>
 
 class Game_camera_control : public Camera_control
 {

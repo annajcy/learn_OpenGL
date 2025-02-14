@@ -1,8 +1,8 @@
 #pragma once
 
 #include "global/core.h"
+
 #include "application/image.h"
-#include <memory>
 
 class Texture {
 public:

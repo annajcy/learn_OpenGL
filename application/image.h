@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "global/core.h"
 
 class Image {
 

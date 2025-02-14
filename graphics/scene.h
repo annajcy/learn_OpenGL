@@ -1,7 +1,7 @@
 #pragma once 
 
-#include "node.h"
 #include "global/core.h"
+#include "node.h"
 
 class Scene : public Node
 {

@@ -2,8 +2,6 @@
 
 #include "light.h"
 #include "graphics/node.h"
-#include <memory>
-#include <string>
 
 class Point_light : public Light, public Node
 {

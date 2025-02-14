@@ -1,5 +1,7 @@
 #pragma once
 
+#include "global/core.h"
+
 #include "graphics/geometry.h"
 #include "graphics/material/material.h"
 #include "graphics/node.h"

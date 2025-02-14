@@ -1,7 +1,9 @@
 #pragma once
 
 #include "global/core.h"
+
 #include "application/camera/type/camera.h"
+
 #include "graphics/mesh.h"
 #include "graphics/light/light_setting.h"
 #include "graphics/shader/shader_program.h"

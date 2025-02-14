@@ -1,5 +1,4 @@
 #include "ambient_light.h"
-#include <string> // 包含 std::to_string 的头文件
 
 // 实现 set_shader_uniform 函数
 void Ambient_light::set_shader_uniform(const std::shared_ptr<Shader_program>& shader, const std::string &var_name) {

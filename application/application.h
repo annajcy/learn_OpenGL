@@ -4,9 +4,6 @@
 #include "global/singleton.h"
 #include "global/action.h"
 
-#include <iostream>
-#include <functional>
-
 class GLFWwindow;
 
 using Resize_action = Action<int, int>;

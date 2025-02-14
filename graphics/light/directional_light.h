@@ -1,6 +1,5 @@
 #pragma once
 
-#include "global/core.h" // 包含全局核心文件
 #include "light.h"       // 包含 Light 基类的定义
 
 class Directional_light : public Light

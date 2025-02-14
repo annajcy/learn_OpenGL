@@ -1,7 +1,5 @@
 #include "input.h"
 
-#include <iostream>
-
 void Input_system::update_cursor_position(double x, double y) {
     
     m_mouse_dx = x - m_mouse_x;

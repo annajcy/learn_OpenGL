@@ -2,11 +2,6 @@
 
 #include "light.h"
 #include "graphics/node.h"
-#include <memory>
-#include <string>
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 class Spot_light : public Light, public Node
 {

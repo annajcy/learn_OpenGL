@@ -1,5 +1,4 @@
 #include "directional_light.h"
-#include <string> // 包含 std::to_string 的头文件
 
 // 构造函数
 Directional_light::Directional_light() : Light() { }

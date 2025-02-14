@@ -3,8 +3,6 @@
 #include "global/core.h"
 #include "global/singleton.h"
 
-#include <unordered_map>
-#include <memory>
 
 class Input_system {
 public:

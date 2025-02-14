@@ -6,10 +6,6 @@
 #include "spot_light.h"
 #include "point_light.h"
 
-#include <vector>
-#include <memory>
-#include <algorithm>
-
 class Light_setting
 {
 private:

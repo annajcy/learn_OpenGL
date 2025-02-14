@@ -1,7 +1,5 @@
 #include "geometry.h"
 
-#include "geometry.h"
-
 GLuint Geometry::vao() const { return m_vao; }
 GLuint Geometry::ebo() const { return m_ebo; }
 

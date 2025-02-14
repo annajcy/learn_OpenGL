@@ -1,10 +1,9 @@
 #pragma once
 
 #include "global/core.h"
+
 #include "application/input.h"
 #include "application/camera/type/camera.h"
-
-#include <memory>
 
 class Camera_control { 
 protected:

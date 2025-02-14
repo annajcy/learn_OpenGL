@@ -2,9 +2,6 @@
 
 #include "global/core.h"
 #include "graphics/shader/shader_program.h"
-#include <memory>
-#include <string>
-#include <glm/glm.hpp>
 
 class Light
 {

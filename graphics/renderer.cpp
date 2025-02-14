@@ -1,5 +1,4 @@
 #include "renderer.h"
-#include <iostream>
 
 Renderer::Renderer(const std::shared_ptr<Scene> &scene, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting) 
     : m_scene(scene), m_camera(camera), m_light_settings(light_setting), 

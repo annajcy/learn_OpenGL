@@ -1,6 +1,5 @@
 #include "game_camera_control.h"
 
-#include <cmath>
 
 Game_camera_control::Game_camera_control(const std::shared_ptr<Camera> &camera)
     : Camera_control(camera) { }
