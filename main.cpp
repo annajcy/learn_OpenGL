@@ -15,20 +15,10 @@
 
 #include "graphics/camera/control/trackball_camera_control.h"
 #include "graphics/camera/control/game_camera_control.h"
-#include "graphics/camera/type/orthographic_camera.h"
-#include "graphics/camera/type/perspective_camera.h"
+#include "graphics/camera/orthographic_camera.h"
+#include "graphics/camera/perspective_camera.h"
 
 #include "utils/string_utils.h"
-
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
-#include "assimp/Importer.hpp"
-
-#include <string>
-#include <memory>
-#include <iostream>
 
 std::shared_ptr<Texture> main_texture {};
 std::shared_ptr<Texture> specular_mask_texture {};
@@ -120,6 +110,7 @@ void prepare_lights() {
 }
 
 void prepare_model() {
+
 	// model = Assimp_loader::load("assets/model/monster/monster.fbx");
 	// model->scale() = glm::vec3(0.01f);
 	// model->position().y = -1.0f;
@@ -157,6 +148,11 @@ void render_gui() {
 	
 }
 
+void render() {
+	renderer->clear();
+	renderer->render();
+}
+
 int main()
 {
 	if (!App::get_instance()->init()) {
@@ -176,11 +172,7 @@ int main()
 	while (App::get_instance()->is_active()) {
 		App::get_instance()->update();
 		camera_control->update();
-		
-		renderer->clear();
-		renderer->render();
-		check_error();
-		
+		render();
 		render_gui();
 	}
 

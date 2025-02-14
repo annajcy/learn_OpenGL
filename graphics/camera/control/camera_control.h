@@ -3,7 +3,7 @@
 #include "global/core.h"
 
 #include "application/input.h"
-#include "graphics/camera/type/camera.h"
+#include "graphics/camera/camera.h"
 
 class Camera_control { 
 protected:

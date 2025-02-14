@@ -2,7 +2,7 @@
 
 #include "global/core.h"
 
-#include "graphics/camera/type/camera.h"
+#include "graphics/camera/camera.h"
 #include "graphics/mesh.h"
 #include "graphics/light/light_setting.h"
 #include "graphics/shader/shader_program.h"

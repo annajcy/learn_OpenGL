@@ -5,13 +5,9 @@ Renderer::Renderer(const std::shared_ptr<Scene> &scene, const std::shared_ptr<Ca
       m_phong_shader(Shader_program::create_vs_fs_program("assets/shaders/phong/phong.vert", "assets/shaders/phong/phong.frag")), 
       m_white_shader(Shader_program::create_vs_fs_program("assets/shaders/white/white.vert", "assets/shaders/white/white.frag")) { }
 
-std::shared_ptr<Camera>& Renderer::camera() { 
-    return m_camera; 
-}
-
-std::shared_ptr<Light_setting>& Renderer::light_setting() { 
-    return m_light_settings; 
-}
+std::shared_ptr<Scene>& Renderer::scene() { return m_scene; }
+std::shared_ptr<Camera>& Renderer::camera() { return m_camera; }
+std::shared_ptr<Light_setting>& Renderer::light_setting() { return m_light_settings; }
 
 void Renderer::set_clear_color(const glm::vec3& color) {
     glClearColor(color.r, color.g, color.b, 1.0f);
@@ -19,48 +15,55 @@ void Renderer::set_clear_color(const glm::vec3& color) {
 
 void Renderer::init_state() {
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LESS);
+	glDepthMask(GL_TRUE);
 }
 
 void Renderer::clear() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-std::shared_ptr<Scene>& Renderer::scene() {
-    return m_scene;
-}
-
 void Renderer::render_mesh(const std::shared_ptr<Mesh>& mesh) {
     auto shader = pick_shader(mesh->material()->type());
-        shader->attach_program();
+    shader->attach_program();
 
-        // Update uniforms
-        if (mesh->material()->type() == Material::Material_type::PHONG) {
+    // Update uniforms
+    if (mesh->material()->type() == Material::Material_type::PHONG) {
 
-            update_phong_shader_uniform(shader, mesh);
+        update_phong_shader_uniform(shader, mesh);
 
-            auto phong_mat = std::dynamic_pointer_cast<Phong_material>(mesh->material());
+        auto phong_mat = std::dynamic_pointer_cast<Phong_material>(mesh->material());
 
-            phong_mat->main_texture()->attach_texture();
-            phong_mat->specular_mask_texture()->attach_texture();
+        phong_mat->main_texture()->attach_texture();
+        phong_mat->specular_mask_texture()->attach_texture();
 
-            mesh->geometry()->attach_geometry();
-            mesh->geometry()->draw();
-            mesh->geometry()->detach_geometry();
-
-            phong_mat->main_texture()->detach_texture();
-            phong_mat->specular_mask_texture()->detach_texture();
-
+        if (phong_mat->depth_test()) {
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(phong_mat->depth_function());
         } else {
-
-            update_white_shader_uniform(shader, mesh);
-
-            mesh->geometry()->attach_geometry();
-            mesh->geometry()->draw();
-            mesh->geometry()->detach_geometry();
+            glDisable(GL_DEPTH_TEST);
         }
 
-        shader->detach_program();
+        if (phong_mat->depth_write()) glDepthMask(GL_TRUE);
+		else glDepthMask(GL_FALSE);
+	
+        mesh->geometry()->attach_geometry();
+        mesh->geometry()->draw();
+        mesh->geometry()->detach_geometry();
+
+        phong_mat->main_texture()->detach_texture();
+        phong_mat->specular_mask_texture()->detach_texture();
+
+    } else {
+
+        update_white_shader_uniform(shader, mesh);
+
+        mesh->geometry()->attach_geometry();
+        mesh->geometry()->draw();
+        mesh->geometry()->detach_geometry();
+    }
+
+    shader->detach_program();
 }
 
 void Renderer::render_node(const std::shared_ptr<Node>& node) {
