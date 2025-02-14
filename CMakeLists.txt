@@ -17,6 +17,7 @@ set(ASSIMP_PATH ${CMAKE_SOURCE_DIR}/third_party/assimp)
 
 file(GLOB_RECURSE GLAD_SRC ${GLAD_PATH}/src/*.cpp)
 file(GLOB_RECURSE IMGUI_SRC ${IMGUI_PATH}/src/*.cpp)
+file(GLOB_RECURSE STB_IMAGE_SRC ${STB_IMAGE_PATH}/src/*.cpp)
 
 file(GLOB_RECURSE GLOBAL_SRC ${CMAKE_SOURCE_DIR}/global/*.cpp)
 file(GLOB_RECURSE APPLICATION_SRC ${CMAKE_SOURCE_DIR}/application/*.cpp)
@@ -61,6 +62,7 @@ set(SOURCES
 
     ${GLAD_SRC}
     ${IMGUI_SRC}
+    ${STB_IMAGE_SRC}
 
 	${CMAKE_SOURCE_DIR}/main.cpp 
 )
