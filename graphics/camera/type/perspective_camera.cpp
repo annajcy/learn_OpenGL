@@ -2,7 +2,7 @@
 
 Perspective_camera::~Perspective_camera() = default;
 
-Perspective_camera::Perspective_camera(float fov, float aspect, float near_bound, float far_bound, const glm::vec3 &position, const glm::vec3 &up, const glm::vec3 &right) : Camera(position, up, right) {
+Perspective_camera::Perspective_camera(float fov, float aspect, float near_bound, float far_bound) : Camera() {
     m_fov = fov;
     m_aspect = aspect;
     m_near_bound = near_bound;
@@ -45,6 +45,6 @@ glm::mat4 Perspective_camera::projection_matrix() const {
     return glm::perspective(glm::radians(m_fov), m_aspect, m_near_bound, m_far_bound);
 }
 
-void Perspective_camera::adjust_scale(float delta_scale) {
-    translate(front(), delta_scale);
+void Perspective_camera::adjust_zoom(float delta_zoom) {
+    translate(front(), delta_zoom);
 }

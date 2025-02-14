@@ -5,6 +5,7 @@
 #include "graphics/node.h"
 #include "graphics/mesh.h"
 #include "graphics/material/phong_material.h"
+#include "graphics/material/white_material.h"
 
 #include "utils/math_utils.h"
 

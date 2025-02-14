@@ -1,15 +1,7 @@
 #include "node.h"
 
 Node::Node(Node_type type) : m_type(type) {}
-
-glm::vec3& Node::rotation_euler() { return m_rotation_euler; }
-glm::vec3& Node::scale() { return m_scale; }
-glm::vec3& Node::position() { return m_position; }
-
 Node::Node_type Node::type() const { return m_type; }
-glm::vec3 Node::position() const { return m_position; }
-glm::vec3 Node::rotation_euler() const { return m_rotation_euler; }
-glm::vec3 Node::scale() const { return m_scale; }
 
 glm::mat4 Node::model_matrix() const {
 
@@ -22,12 +14,7 @@ glm::mat4 Node::model_matrix() const {
     glm::mat4 transform = glm::identity<glm::mat4>();
 
     transform = glm::scale(transform, m_scale);
-
-    // pitch -> yaw -> roll
-    transform = glm::rotate(transform, glm::radians(m_rotation_euler.x), glm::vec3(1.0f, 0.0f, 0.0f));
-    transform = glm::rotate(transform, glm::radians(m_rotation_euler.y), glm::vec3(0.0f, 1.0f, 0.0f));
-    transform = glm::rotate(transform, glm::radians(m_rotation_euler.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
+    transform *= glm::mat4_cast(m_rotation);
     transform = glm::translate(glm::identity<glm::mat4>(), m_position) * transform;
 
     return parent_tranform * transform;
@@ -68,4 +55,43 @@ std::shared_ptr<Node>& Node::parent() {
 
 std::vector<std::shared_ptr<Node>>& Node::children() {
     return m_children;
+}
+
+//Yaw-Pitch-Roll order
+glm::vec3 Node::rotation_euler() const { return glm::degrees(glm::eulerAngles(m_rotation)); }
+
+glm::vec3 Node::position() const { return m_position; }
+glm::vec3 Node::scale() const { return m_scale; }
+glm::quat Node::rotation() const { return m_rotation; }
+
+glm::vec3& Node::position() { return m_position; }
+glm::vec3& Node::scale() { return m_scale; }
+glm::quat& Node::rotation() { return m_rotation; }
+
+glm::vec3 Node::up() const { return glm::rotate(m_rotation, glm::vec3(0.0f, 1.0f, 0.0f)); }
+glm::vec3 Node::down() const { return -up(); }
+glm::vec3 Node::right() const { return glm::rotate(m_rotation, glm::vec3(1.0f, 0.0f, 0.0f)); }
+glm::vec3 Node::left() const { return -right(); }
+glm::vec3 Node::front() const { return glm::cross(right(), up()); }
+glm::vec3 Node::back() const { return -front(); }
+
+void Node::translate(const glm::vec3 &direction, float distance) {
+    m_position += direction * distance;
+}
+
+void Node::rotate(float angle, const glm::vec3& axis) {
+    glm::quat rotation = glm::angleAxis(glm::radians(angle), axis);  // Convert angle-axis to quaternion
+    m_rotation = rotation * m_rotation;  // Apply the rotation to the current rotation
+}
+
+void Node::pitch(float angle) {
+    rotate(angle, up());
+}
+
+void Node::yaw(float angle) {
+    rotate(angle, right());
+}
+
+void Node::roll(float angle) {
+    rotate(angle, front());
 }

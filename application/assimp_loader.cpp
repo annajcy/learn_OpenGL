@@ -92,6 +92,8 @@ std::shared_ptr<Mesh> Assimp_loader::process_mesh(const aiScene* scene, aiMesh* 
         phong_mat->specular_mask_texture() = specular ? specular : Texture::create_default_texture(1);
 
         material = phong_mat;
+    } else {
+        material = std::make_shared<White_material>();
     }
 
     return std::make_shared<Mesh>(geometry, material);
@@ -113,7 +115,6 @@ std::shared_ptr<Texture> Assimp_loader::process_texture(
     if (ai_texture) {
         unsigned char* data = reinterpret_cast<unsigned char*>(ai_texture->pcData);
         int data_size = ai_texture->mHeight ? ai_texture->mHeight * ai_texture->mWidth * 4 : ai_texture->mWidth;
-        
         texture = Texture::create_texture_from_memory(folder_path + ai_path.C_Str(), data, data_size, unit, set_default_warp_filter);
     } else {
         texture = Texture::create_texture_from_path(folder_path + ai_path.C_Str(), folder_path + ai_path.C_Str(), unit, set_default_warp_filter);

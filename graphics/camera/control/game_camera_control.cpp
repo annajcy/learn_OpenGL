@@ -53,7 +53,7 @@ void Game_camera_control::update()
     auto delta_scale = input->get_mouse_scroll_dy();
 
     if (std::abs(delta_scale) > DBL_EPSILON) {
-        m_camera->adjust_scale(delta_scale * m_scale_sensitivity);
+        m_camera->adjust_zoom(delta_scale * m_scale_sensitivity);
         input->reset_scroll_dy();
     }
 }

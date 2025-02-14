@@ -13,10 +13,10 @@
 #include "application/input.h"
 #include "application/assimp_loader.h"
 
-#include "application/camera/control/trackball_camera_control.h"
-#include "application/camera/control/game_camera_control.h"
-#include "application/camera/type/orthographic_camera.h"
-#include "application/camera/type/perspective_camera.h"
+#include "graphics/camera/control/trackball_camera_control.h"
+#include "graphics/camera/control/game_camera_control.h"
+#include "graphics/camera/type/orthographic_camera.h"
+#include "graphics/camera/type/perspective_camera.h"
 
 #include "utils/string_utils.h"
 
@@ -79,14 +79,12 @@ void prepare_camera() {
 	camera = std::make_shared<Perspective_camera>(
 		60.0f,
 		(float) App::get_instance()->width() / (float) App::get_instance()->height(),
-		0.1f, 1000.0f,
-		glm::vec3(0.0f, 0.0f, -5.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(1.0f, 0.0f, 0.0f)
+		0.1f, 
+		1000.0f
 	);
 
+	camera->position() = glm::vec3(0.0f, 0.0f, -5.0f);
 	camera_control = std::make_shared<Trackball_camera_control>(camera);
-
 }
 
 void prepare_lights() {
@@ -178,16 +176,12 @@ int main()
 	while (App::get_instance()->is_active()) {
 		App::get_instance()->update();
 		camera_control->update();
-
-		//mesh1->rotation_euler().x += 2.0f;
 		
 		renderer->clear();
 		renderer->render();
 		check_error();
 		
 		render_gui();
-
-		
 	}
 
 	Application::destroy();

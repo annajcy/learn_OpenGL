@@ -3,8 +3,6 @@
 #include "global/core.h"
 #include "shader_code.h"
 #include "utils/string_utils.h"
-#include <vector>
-#include <memory>
 
 class Shader_program
 {
