@@ -26,9 +26,7 @@ public:
 
     std::shared_ptr<Camera>& camera();
     std::shared_ptr<Light_setting>& light_setting();
-    std::shared_ptr<Scene>& scene() {
-        return m_scene;
-    }
+    std::shared_ptr<Scene>& scene();
 
     void render_mesh(const std::shared_ptr<Mesh>& mesh);
     void render_node(const std::shared_ptr<Node>& node);

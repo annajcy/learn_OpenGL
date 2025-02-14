@@ -74,29 +74,6 @@ void prepare_events() {
 	});
 }
 
-void prepare_texture() {
-	auto main_image = std::make_shared<Image>("assets/image/box.png");
-	auto specular_mask_image = std::make_shared<Image>("assets/image/sp_mask.png");
-
-	main_texture = std::make_shared<Texture>(main_image, 0, false);
-	specular_mask_texture = std::make_shared<Texture>(specular_mask_image, 1, false);
-
-	main_texture->attach_texture();
-	main_texture->set_wrap(Texture::Warp::S, Texture::Wrap_type::REPEAT);
-	main_texture->set_wrap(Texture::Warp::T, Texture::Wrap_type::REPEAT);
-	main_texture->set_filter(Texture::Filter::MIN, Texture::Filter_type::LINEAR_MIPMAP_LINEAR);
-	main_texture->set_filter(Texture::Filter::MAG, Texture::Filter_type::LINEAR);
-	main_texture->detach_texture();
-
-	specular_mask_texture->attach_texture();
-	specular_mask_texture->set_wrap(Texture::Warp::S, Texture::Wrap_type::REPEAT);
-	specular_mask_texture->set_wrap(Texture::Warp::T, Texture::Wrap_type::REPEAT);
-	specular_mask_texture->set_filter(Texture::Filter::MIN, Texture::Filter_type::LINEAR_MIPMAP_LINEAR);
-	specular_mask_texture->set_filter(Texture::Filter::MAG, Texture::Filter_type::LINEAR);
-	specular_mask_texture->detach_texture();
-
-}
-
 void prepare_camera() {
 
 	camera = std::make_shared<Perspective_camera>(
@@ -144,32 +121,13 @@ void prepare_lights() {
 	});
 }
 
-void prepare_mesh() {
-	auto phong_material = std::make_shared<Phong_material>();
-	phong_material->main_texture() = main_texture;
-	phong_material->specular_mask_texture() = specular_mask_texture;
-
-	auto white_material = std::make_shared<White_material>();
-
-	auto box = Geometry::create_box(1.0f);
-	auto sphere = Geometry::create_sphere(0.1f, 60, 60);
-
-	mesh1 = std::make_shared<Mesh>(box, phong_material);
-	mesh2 = std::make_shared<Mesh>(sphere, white_material);
-
-	mesh2->position() = glm::vec3(0.0, 0.0, 2.0);
-
-	mesh1->add_child(mesh2);
-
-	scene = std::make_shared<Scene>();
-	scene->add_child(mesh1);
-}
-
 void prepare_model() {
-	model = Assimp_loader::load("assets/model/test/test.fbx");
-	//model = Assimp_loader::load("assets/model/monster/monster.fbx");
-	//model = Assimp_loader::load("assets/model/backpack/backpack.obj");
+	// model = Assimp_loader::load("assets/model/monster/monster.fbx");
+	// model->scale() = glm::vec3(0.01f);
+	// model->position().y = -1.0f;
 
+	model = Assimp_loader::load("assets/model/backpack/backpack.obj");
+	
 	scene = std::make_shared<Scene>();
 	scene->add_child(model);
 }
@@ -210,9 +168,7 @@ int main()
 
 	prepare_imgui();
 	prepare_events();
-	prepare_texture();
 	prepare_camera();
-	//prepare_mesh();
 	prepare_model();
 	prepare_lights();
 	prepare_renderer();
@@ -227,7 +183,11 @@ int main()
 		
 		renderer->clear();
 		renderer->render();
+		check_error();
+		
 		render_gui();
+
+		
 	}
 
 	Application::destroy();

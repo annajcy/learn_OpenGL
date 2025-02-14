@@ -27,6 +27,10 @@ void Renderer::clear() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+std::shared_ptr<Scene>& Renderer::scene() {
+    return m_scene;
+}
+
 void Renderer::render_mesh(const std::shared_ptr<Mesh>& mesh) {
     auto shader = pick_shader(mesh->material()->type());
         shader->attach_program();

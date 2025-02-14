@@ -1,5 +1,6 @@
 #include "texture.h"
 
+std::string Texture::default_texture_path = "assets/image/default_texture.jpg";
 std::unordered_map<std::string, std::shared_ptr<Texture>> Texture::texture_cache{};
 
 Texture::Texture(const std::shared_ptr<Image> &image, unsigned int unit, bool set_default_warp_filter) {
@@ -16,6 +17,10 @@ void Texture::init(const std::shared_ptr<Image> &image, unsigned int unit, bool 
     glGenTextures(1, &m_texture_id);
 
     attach_texture();
+
+    if (!image->data()) {
+        std::cerr << "invalid data" << std::endl; 
+    }
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width(), image->height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image->data());
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -54,6 +59,10 @@ void Texture::set_filter(Filter filter, Filter_type filter_type) {
     return m_unit;
 }
 
+unsigned int& Texture::unit() {
+    return m_unit;
+}
+
 void Texture::attach_texture() {
     glActiveTexture(GL_TEXTURE0 + m_unit);
     glBindTexture(GL_TEXTURE_2D, m_texture_id);
@@ -62,6 +71,32 @@ void Texture::attach_texture() {
 void Texture::detach_texture() {
     glActiveTexture(GL_TEXTURE0 + m_unit);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+std::shared_ptr<Texture> Texture::create_default_texture(unsigned int unit, bool set_default_warp_filter) {
+    return create_texture_from_path(default_texture_path, default_texture_path, unit, set_default_warp_filter);
+}
+
+std::shared_ptr<Texture> Texture::create_texture_from_path(const std::string& id, const std::string& image_path, unsigned int unit, bool set_default_warp_filter) {
+    if (texture_cache.contains(id)) {
+        texture_cache[id]->unit() = unit;
+        return texture_cache.at(id);
+    }
+    auto image = std::make_shared<Image>(image_path);
+    auto texture = std::make_shared<Texture>(image, unit, set_default_warp_filter);
+    texture_cache.insert({id, texture});
+    return texture;
+}
+
+std::shared_ptr<Texture> Texture::create_texture_from_memory(const std::string& id, unsigned char* data, int data_size, unsigned int unit, bool set_default_warp_filter) {
+    if (texture_cache.contains(id)) {
+        texture_cache[id]->unit() = unit;
+        return texture_cache.at(id);
+    }
+    auto image = std::make_shared<Image>(data, data_size);
+    auto texture = std::make_shared<Texture>(image, unit, set_default_warp_filter);
+    texture_cache.insert({id, texture});
+    return texture;
 }
 
 constexpr GLenum Texture::warp_to_gl_enum(Warp type) {
