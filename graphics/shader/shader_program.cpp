@@ -35,7 +35,7 @@ void Shader_program::check_link_error() {
         std::cerr << "Shader program linked failed" << " --" << m_program_id << std::endl;
         std::cerr << info_log << std::endl;
     } else {
-        std::cout << "Shader program linked successfully" << std::endl;
+        std::cout << "Shader program linked successfully" << " -- " << m_program_id << std::endl;
     }
 }
 

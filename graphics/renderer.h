@@ -8,6 +8,7 @@
 #include "graphics/shader/shader_program.h"
 #include "graphics/material/phong_material.h"
 #include "graphics/material/white_material.h"
+#include "graphics/material/depth_material.h"
 
 #include "scene.h"
 
@@ -20,6 +21,7 @@ private:
 
     std::shared_ptr<Shader_program> m_phong_shader{};
     std::shared_ptr<Shader_program> m_white_shader{};
+    std::shared_ptr<Shader_program> m_depth_shader{};
 
 public:
     Renderer(const std::shared_ptr<Scene> &scene, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting);
@@ -41,4 +43,5 @@ private:
 
     void update_white_shader_uniform(const std::shared_ptr<Shader_program>& shader, const std::shared_ptr<Mesh> &mesh);
     void update_phong_shader_uniform(const std::shared_ptr<Shader_program>& shader, const std::shared_ptr<Mesh> &mesh);
+    void update_depth_shader_uniform(const std::shared_ptr<Shader_program>& shader, const std::shared_ptr<Mesh> &mesh);
 };

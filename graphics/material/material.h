@@ -8,6 +8,7 @@ public:
     enum class Material_type {
         PHONG,
         WHITE,
+        DEPTH
     };
 
 private:

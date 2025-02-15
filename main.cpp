@@ -70,7 +70,7 @@ void prepare_camera() {
 		60.0f,
 		(float) App::get_instance()->width() / (float) App::get_instance()->height(),
 		0.1f, 
-		1000.0f
+		50.0f
 	);
 
 	camera->position() = glm::vec3(0.0f, 0.0f, -5.0f);
@@ -115,6 +115,7 @@ void prepare_model() {
 	// model->scale() = glm::vec3(0.01f);
 	// model->position().y = -1.0f;
 
+	Assimp_loader::default_material_type = Material::Material_type::DEPTH;
 	model = Assimp_loader::load("assets/model/backpack/backpack.obj");
 	
 	scene = std::make_shared<Scene>();

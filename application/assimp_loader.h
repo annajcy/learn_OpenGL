@@ -6,6 +6,7 @@
 #include "graphics/mesh.h"
 #include "graphics/material/phong_material.h"
 #include "graphics/material/white_material.h"
+#include "graphics/material/depth_material.h"
 
 #include "utils/math_utils.h"
 
@@ -15,6 +16,7 @@ public:
     Assimp_loader() = default;
     ~Assimp_loader() = default;
 
+    static Material::Material_type default_material_type;
     static std::string folder_path;
 
     static std::shared_ptr<Node> load(const std::string& path);

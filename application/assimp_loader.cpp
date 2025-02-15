@@ -1,5 +1,6 @@
 #include "assimp_loader.h"
 
+Material::Material_type Assimp_loader::default_material_type = Material::Material_type::PHONG;
 std::string Assimp_loader::folder_path{};
 
 // Static function: Converts aiMatrix4x4 to glm::mat4
@@ -29,7 +30,7 @@ std::shared_ptr<Node> Assimp_loader::process_node(const aiScene* scene, aiNode* 
     for (int i = 0; i < ai_node->mNumMeshes; i++) {
         int id = ai_node->mMeshes[i];
         auto ai_mesh = scene->mMeshes[id];
-        auto mesh = process_mesh(scene, ai_mesh, Material::Material_type::PHONG);
+        auto mesh = process_mesh(scene, ai_mesh, default_material_type);
         node->add_child(mesh);
     }
 
@@ -92,8 +93,10 @@ std::shared_ptr<Mesh> Assimp_loader::process_mesh(const aiScene* scene, aiMesh* 
         phong_mat->specular_mask_texture() = specular ? specular : Texture::create_default_texture(1);
 
         material = phong_mat;
-    } else {
+    } else if (material_type == Material::Material_type::WHITE){
         material = std::make_shared<White_material>();
+    } else {
+        material = std::make_shared<Depth_material>();
     }
 
     return std::make_shared<Mesh>(geometry, material);

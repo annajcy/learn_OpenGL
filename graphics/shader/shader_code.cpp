@@ -30,10 +30,10 @@ void Shader_code::check_compile_error() {
     glGetShaderiv(m_code_id, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(m_code_id, LOG_STR_LEN, nullptr, info_log);
-        std::cerr << "Shader compiled failed" << " --" << shader_type_to_string(m_type) << std::endl;
+        std::cerr << "Shader compiled failed" << " --" << shader_type_to_string(m_type) << " " <<  m_code_id << std::endl;
         std::cerr << info_log << std::endl;
     } else {
-        std::cout << "Shader compiled successfully" << " --" << shader_type_to_string(m_type) << std::endl;
+        std::cout << "Shader compiled successfully" << " --" << shader_type_to_string(m_type) << " " << m_code_id << std::endl;
     }
 }
 
