@@ -18,6 +18,9 @@ void Renderer::init_state() {
     glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glDepthMask(GL_TRUE);
+
+    glDisable(GL_POLYGON_OFFSET_FILL);
+	glDisable(GL_POLYGON_OFFSET_LINE);
 }
 
 void Renderer::clear() {
@@ -29,6 +32,29 @@ void Renderer::render_mesh(const std::shared_ptr<Mesh>& mesh) {
     auto shader = pick_shader(mesh->material()->type());
     shader->attach_program();
 
+    if (mesh->material()->depth_test_setting().test_enabled) {
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(mesh->material()->depth_test_setting().depth_function);
+    } else {
+        glDisable(GL_DEPTH_TEST);
+    }
+
+    if (mesh->material()->depth_test_setting().write_enabled) {
+        glDepthMask(GL_TRUE);
+    } else {
+        glDepthMask(GL_FALSE);
+    }
+
+    if (mesh->material()->polygon_offset_setting().enabled) {
+        glEnable(mesh->material()->polygon_offset_setting().polygon_offset_type);
+        glPolygonOffset(mesh->material()->polygon_offset_setting().factor, mesh->material()->polygon_offset_setting().unit);
+    } else {
+        glDisable(GL_POLYGON_OFFSET_FILL);
+		glDisable(GL_POLYGON_OFFSET_LINE);
+    }
+
+
+
     // Update uniforms
     if (mesh->material()->type() == Material::Material_type::PHONG) {
 
@@ -38,16 +64,6 @@ void Renderer::render_mesh(const std::shared_ptr<Mesh>& mesh) {
 
         phong_mat->main_texture()->attach_texture();
         phong_mat->specular_mask_texture()->attach_texture();
-
-        if (phong_mat->depth_test()) {
-            glEnable(GL_DEPTH_TEST);
-            glDepthFunc(phong_mat->depth_function());
-        } else {
-            glDisable(GL_DEPTH_TEST);
-        }
-
-        if (phong_mat->depth_write()) glDepthMask(GL_TRUE);
-		else glDepthMask(GL_FALSE);
 	
         mesh->geometry()->attach_geometry();
         mesh->geometry()->draw();

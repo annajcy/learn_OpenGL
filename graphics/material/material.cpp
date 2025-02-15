@@ -4,12 +4,10 @@ Material::Material(Material_type type) : m_type(type) {}
 Material::~Material() = default;
 Material::Material_type Material::type() const { return m_type; }
 
-bool Material::depth_test() const { return m_depth_test; }
-bool Material::depth_write() const { return m_depth_write; }
-GLenum Material::depth_function() const { return m_depth_function; }
+Depth_test_setting Material::depth_test_setting() const { return m_depth_test_setting; }
+Depth_test_setting& Material::depth_test_setting() { return m_depth_test_setting; }
 
-bool& Material::depth_test() { return m_depth_test; }
-bool& Material::depth_write() { return m_depth_write; }
-GLenum& Material::depth_function() { return m_depth_function; }
+Polygon_offset_setting Material::polygon_offset_setting() const { return m_polygon_offset_setting; }
+Polygon_offset_setting& Material::polygon_offset_setting() { return m_polygon_offset_setting; }
 
 
