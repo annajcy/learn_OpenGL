@@ -3,7 +3,7 @@
 Renderer::Renderer(const std::shared_ptr<Scene> &scene, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting) 
     : m_scene(scene), m_camera(camera), m_light_settings(light_setting), 
       m_phong_shader(Shader_program::create_vs_fs_program("assets/shaders/phong/phong.vert", "assets/shaders/phong/phong.frag")), 
-      m_white_shader(Shader_program::create_vs_fs_program("assets/shaders/white/white.vert", "assets/shaders/white/white.frag")),
+      m_edge_shader(Shader_program::create_vs_fs_program("assets/shaders/edge/edge.vert", "assets/shaders/edge/edge.frag")),
       m_depth_shader(Shader_program::create_vs_fs_program("assets/shaders/depth/depth.vert", "assets/shaders/depth/depth.frag")) { }
 
 std::shared_ptr<Scene>& Renderer::scene() { return m_scene; }
@@ -97,7 +97,7 @@ void Renderer::render() {
 
 std::shared_ptr<Shader_program> Renderer::pick_shader(Material::Material_type type) {
     if (type == Material::Material_type::PHONG) return m_phong_shader;
-    else if (type == Material::Material_type::EDGE) return m_white_shader;
+    else if (type == Material::Material_type::EDGE) return m_edge_shader;
     else return m_depth_shader;
 }
 

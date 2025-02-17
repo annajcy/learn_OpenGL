@@ -20,7 +20,7 @@ private:
     std::shared_ptr<Scene> m_scene{};
 
     std::shared_ptr<Shader_program> m_phong_shader{};
-    std::shared_ptr<Shader_program> m_white_shader{};
+    std::shared_ptr<Shader_program> m_edge_shader{};
     std::shared_ptr<Shader_program> m_depth_shader{};
 
 public:
