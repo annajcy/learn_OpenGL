@@ -75,6 +75,31 @@ glm::vec3 Node::left() const { return -right(); }
 glm::vec3 Node::front() const { return glm::cross(right(), up()); }
 glm::vec3 Node::back() const { return -front(); }
 
+void Node::look_at(const glm::vec3& target_direction) {
+    glm::vec3 direction = glm::normalize(target_direction);
+    glm::vec3 current_front = front();
+
+    // 避免方向向量过小，防止除零错误
+    if (glm::length(direction) < 1e-6f) {
+        return;
+    }
+
+    // 检查当前前向量和目标方向是否几乎平行
+    if (glm::length(glm::cross(current_front, direction)) < 1e-6f) {
+        // 如果它们是相反方向，则绕 up 轴旋转 180 度
+        if (glm::dot(current_front, direction) < 0) {
+            m_rotation = glm::rotate(m_rotation, glm::radians(180.0f), up());
+        }
+        return;
+    }
+
+    // 计算旋转四元数：从 current_front 旋转到 direction
+    glm::quat rotation_quat = glm::rotation(current_front, direction);
+
+    // 更新 m_rotation
+    m_rotation = rotation_quat * m_rotation;
+}
+
 void Node::translate(const glm::vec3 &direction, float distance) {
     m_position += direction * distance;
 }
@@ -95,3 +120,31 @@ void Node::yaw(float angle) {
 void Node::roll(float angle) {
     rotate(angle, front());
 }
+
+Node Node::world_node() const {
+    Node world_node(type());  // Create a new node with the same type
+
+    // Start with the current node's local transformations
+    glm::vec3 world_position = m_position;
+    glm::quat world_rotation = m_rotation;
+    glm::vec3 world_scale = m_scale;
+
+    // Traverse up the parent hierarchy to accumulate transformations
+    std::shared_ptr<Node> current_parent = m_parent;
+    while (current_parent) {
+        
+        world_position = current_parent->rotation() * (world_position * current_parent->scale()) + current_parent->position();
+        world_rotation = current_parent->rotation() * world_rotation;
+        world_scale *= current_parent->scale();
+
+        current_parent = current_parent->parent();
+    }
+
+    // Assign the computed world-space transformations
+    world_node.position() = world_position;
+    world_node.rotation() = world_rotation;
+    world_node.scale() = world_scale;
+
+    return world_node;
+}
+

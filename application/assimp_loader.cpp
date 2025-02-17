@@ -19,12 +19,7 @@ std::shared_ptr<Node> Assimp_loader::process_node(const aiScene* scene, aiNode* 
 
     glm::mat4 local_transform = to_glm_mat4(ai_node->mTransformation);
 
-    glm::vec3 position{}, rotation_euler{}, scale{};
-    utils::decompose_transform(local_transform, position, rotation_euler, scale);
-
-    node->position() = position;
-    node->rotation_euler() = rotation_euler;
-    node->scale() = scale;
+    utils::decompose_transform(local_transform, node->position(), node->rotation(), node->scale());
 
     // Process meshes attached to the node
     for (int i = 0; i < ai_node->mNumMeshes; i++) {

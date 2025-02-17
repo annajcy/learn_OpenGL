@@ -7,6 +7,7 @@ void Ambient_light::set_shader_uniform(const std::shared_ptr<Shader_program>& sh
 }
 
 void Ambient_light::set_shader_uniform(const std::shared_ptr<Shader_program>& shader, const std::string &var_name, int index) {
-    shader->set_uniform_glm<glm::vec3>(var_name + "[" + std::to_string(index) + "].color", m_color);
-    shader->set_uniform<float>(var_name + "[" + std::to_string(index) + "].intensity", m_intensity);
+    auto indexed_var = indexed_var_name(var_name, index);
+    shader->set_uniform_glm<glm::vec3>(indexed_var + ".color", m_color);
+    shader->set_uniform<float>(indexed_var + ".intensity", m_intensity);
 }

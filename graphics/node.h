@@ -1,6 +1,7 @@
 #pragma once
 
 #include "global/core.h"
+#include "utils/math_utils.h"
 
 class Node : public std::enable_shared_from_this<Node>
 {
@@ -16,6 +17,7 @@ public:
 
 protected:
     Node_type m_type{};
+
     glm::vec3 m_position = glm::zero<glm::vec3>();
     glm::vec3 m_scale = glm::one<glm::vec3>();
     glm::quat m_rotation = glm::identity<glm::quat>();
@@ -54,6 +56,9 @@ public:
 
     [[nodiscard]] glm::mat4 model_matrix() const;
 
+    Node world_node() const;
+
+    void look_at(const glm::vec3& target_direction);
     void translate(const glm::vec3 &direction, float distance);
     void rotate(float angle, const glm::vec3& axis);
     void pitch(float angle);

@@ -15,3 +15,7 @@ glm::vec3 Light::color() const {
 float Light::intensity() const {
     return m_intensity;
 }
+
+std::string Light::indexed_var_name(const std::string &var_name, int index) {
+    return var_name + "[" + std::to_string(index) + "]";
+}

@@ -27,9 +27,6 @@ std::shared_ptr<Perspective_camera> camera{};
 std::shared_ptr<Trackball_camera_control> camera_control{};
 
 std::shared_ptr<Node> model{};
-std::shared_ptr<Mesh> mesh1{};
-std::shared_ptr<Mesh> mesh2{};
-
 std::shared_ptr<Light_setting> light_setting{};
 std::shared_ptr<Renderer> renderer{};
 
@@ -80,11 +77,12 @@ void prepare_camera() {
 void prepare_lights() {
 	
 	auto directional_light = std::make_shared<Directional_light>(); 
-	directional_light->direction() = glm::vec3(0.0, 1.0, 0.0);
+
+	directional_light->look_at(glm::vec3(1.0, 0.0, 0.0));
 	
 	auto spot_light = std::make_shared<Spot_light>();
 	spot_light->position() = glm::vec3(0.0f, 0.0f, 2.0f);
-	spot_light->direction() = glm::vec3(0.0, 0.0f, -1.0f);
+	spot_light->look_at(glm::vec3(0.0, 0.0f, -1.0f));
 	spot_light->inner_angle() = 5.0f;
 	spot_light->outer_angle() = 10.0f;
 	spot_light->color() = glm::vec3(1.0, 1.0, 0.0);
@@ -117,6 +115,16 @@ void prepare_model() {
 
 	//Assimp_loader::default_material_type = Material::Material_type::DEPTH;
 	model = Assimp_loader::load("assets/model/backpack/backpack.obj");
+	model->scale() = glm::vec3(0.8f);
+
+	for (auto &dl : light_setting->directional_lights())
+		model->add_child(dl);
+
+	for (auto &pl : light_setting->point_lights())
+		model->add_child(pl);
+
+	for (auto &spl : light_setting->spot_lights())
+		model->add_child(spl);
 	
 	scene = std::make_shared<Scene>();
 	scene->add_child(model);
@@ -164,14 +172,15 @@ int main()
 	prepare_imgui();
 	prepare_events();
 	prepare_camera();
-	prepare_model();
 	prepare_lights();
+	prepare_model();
 	prepare_renderer();
 
 	glViewport(0, 0, App::get_instance()->width(), App::get_instance()->height());
 
 	while (App::get_instance()->is_active()) {
 		App::get_instance()->update();
+		model->rotate(1.0f, model->up());
 		camera_control->update();
 		render();
 		render_gui();

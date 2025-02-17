@@ -22,6 +22,8 @@ public:
     [[nodiscard]] float k2() const;
     [[nodiscard]] float kc() const;
 
+    glm::vec3 light_position() const;
+
     void set_shader_uniform(const std::shared_ptr<Shader_program>& shader, const std::string &var_name) override;
     void set_shader_uniform(const std::shared_ptr<Shader_program>& shader, const std::string &var_name, int index) override;
 };

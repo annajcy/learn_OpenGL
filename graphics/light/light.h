@@ -2,12 +2,15 @@
 
 #include "global/core.h"
 #include "graphics/shader/shader_program.h"
+#include "graphics/node.h"
 
 class Light
 {
 protected:
     glm::vec3 m_color = glm::one<glm::vec3>();
     float m_intensity { 1.0f };
+
+    static std::string indexed_var_name(const std::string &var_name, int index);
 
 public:
     Light() = default;
