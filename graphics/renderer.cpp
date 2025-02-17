@@ -15,45 +15,23 @@ void Renderer::set_clear_color(const glm::vec3& color) {
 }
 
 void Renderer::init_state() {
-    glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	glDepthMask(GL_TRUE);
-
-    glDisable(GL_POLYGON_OFFSET_FILL);
-	glDisable(GL_POLYGON_OFFSET_LINE);
+    Depth_test_setting::reset_to_default();
+    Polygon_offset_setting::reset_to_default();
+    Stencil_test_setting::reset_to_default();
 }
 
 void Renderer::clear() {
     init_state();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void Renderer::render_mesh(const std::shared_ptr<Mesh>& mesh) {
     auto shader = pick_shader(mesh->material()->type());
     shader->attach_program();
 
-    if (mesh->material()->depth_test_setting().test_enabled) {
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(mesh->material()->depth_test_setting().depth_function);
-    } else {
-        glDisable(GL_DEPTH_TEST);
-    }
-
-    if (mesh->material()->depth_test_setting().write_enabled) {
-        glDepthMask(GL_TRUE);
-    } else {
-        glDepthMask(GL_FALSE);
-    }
-
-    if (mesh->material()->polygon_offset_setting().enabled) {
-        glEnable(mesh->material()->polygon_offset_setting().polygon_offset_type);
-        glPolygonOffset(mesh->material()->polygon_offset_setting().factor, mesh->material()->polygon_offset_setting().unit);
-    } else {
-        glDisable(GL_POLYGON_OFFSET_FILL);
-		glDisable(GL_POLYGON_OFFSET_LINE);
-    }
-
-
+    mesh->material()->depth_test_setting().apply();
+    mesh->material()->polygon_offset_setting().apply();
+    mesh->material()->stencil_test_setting().apply();
 
     // Update uniforms
     if (mesh->material()->type() == Material::Material_type::PHONG) {
@@ -72,7 +50,7 @@ void Renderer::render_mesh(const std::shared_ptr<Mesh>& mesh) {
         phong_mat->main_texture()->detach_texture();
         phong_mat->specular_mask_texture()->detach_texture();
 
-    } else if (mesh->material()->type() == Material::Material_type::WHITE) {
+    } else if (mesh->material()->type() == Material::Material_type::EDGE) {
 
         update_white_shader_uniform(shader, mesh);
 
@@ -119,7 +97,7 @@ void Renderer::render() {
 
 std::shared_ptr<Shader_program> Renderer::pick_shader(Material::Material_type type) {
     if (type == Material::Material_type::PHONG) return m_phong_shader;
-    else if (type == Material::Material_type::WHITE) return m_white_shader;
+    else if (type == Material::Material_type::EDGE) return m_white_shader;
     else return m_depth_shader;
 }
 

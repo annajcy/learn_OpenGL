@@ -26,7 +26,6 @@ std::shared_ptr<Texture> specular_mask_texture {};
 std::shared_ptr<Perspective_camera> camera{};
 std::shared_ptr<Trackball_camera_control> camera_control{};
 
-std::shared_ptr<Node> model{};
 std::shared_ptr<Light_setting> light_setting{};
 std::shared_ptr<Renderer> renderer{};
 
@@ -113,21 +112,16 @@ void prepare_model() {
 	// model->scale() = glm::vec3(0.01f);
 	// model->position().y = -1.0f;
 
-	//Assimp_loader::default_material_type = Material::Material_type::DEPTH;
-	model = Assimp_loader::load("assets/model/backpack/backpack.obj");
-	model->scale() = glm::vec3(0.8f);
+	Assimp_loader::default_material_type = Material::Material_type::PHONG;
+	auto model = Assimp_loader::load("assets/model/backpack/backpack.obj");
+	model->scale() = glm::vec3(0.95f);
 
-	for (auto &dl : light_setting->directional_lights())
-		model->add_child(dl);
+	Assimp_loader::default_material_type = Material::Material_type::EDGE;
+	auto model_edge = Assimp_loader::load("assets/model/backpack/backpack.obj");
 
-	for (auto &pl : light_setting->point_lights())
-		model->add_child(pl);
-
-	for (auto &spl : light_setting->spot_lights())
-		model->add_child(spl);
-	
 	scene = std::make_shared<Scene>();
 	scene->add_child(model);
+	scene->add_child(model_edge);
 }
 
 void prepare_renderer() {
@@ -180,7 +174,6 @@ int main()
 
 	while (App::get_instance()->is_active()) {
 		App::get_instance()->update();
-		model->rotate(1.0f, model->up());
 		camera_control->update();
 		render();
 		render_gui();

@@ -88,8 +88,8 @@ std::shared_ptr<Mesh> Assimp_loader::process_mesh(const aiScene* scene, aiMesh* 
         phong_mat->specular_mask_texture() = specular ? specular : Texture::create_default_texture(1);
 
         material = phong_mat;
-    } else if (material_type == Material::Material_type::WHITE){
-        material = std::make_shared<White_material>();
+    } else if (material_type == Material::Material_type::EDGE){
+        material = std::make_shared<Edge_material>();
     } else {
         material = std::make_shared<Depth_material>();
     }

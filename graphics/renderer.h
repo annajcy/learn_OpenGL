@@ -7,7 +7,7 @@
 #include "graphics/light/light_setting.h"
 #include "graphics/shader/shader_program.h"
 #include "graphics/material/phong_material.h"
-#include "graphics/material/white_material.h"
+#include "graphics/material/edge_material.h"
 #include "graphics/material/depth_material.h"
 
 #include "scene.h"
@@ -40,7 +40,7 @@ public:
 
 private:
     std::shared_ptr<Shader_program> pick_shader(Material::Material_type type);
-
+   
     void update_white_shader_uniform(const std::shared_ptr<Shader_program>& shader, const std::shared_ptr<Mesh> &mesh);
     void update_phong_shader_uniform(const std::shared_ptr<Shader_program>& shader, const std::shared_ptr<Mesh> &mesh);
     void update_depth_shader_uniform(const std::shared_ptr<Shader_program>& shader, const std::shared_ptr<Mesh> &mesh);
