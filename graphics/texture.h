@@ -11,8 +11,8 @@ public:
     static std::unordered_map<std::string, std::shared_ptr<Texture>> texture_cache;
 
     static std::shared_ptr<Texture> create_default_texture(unsigned int unit = 0, bool set_default_warp_filter = true);
-    static std::shared_ptr<Texture> create_texture_from_path(const std::string& id, const std::string& image_path, unsigned int unit = 0, bool set_default_warp_filter = true);
-    static std::shared_ptr<Texture> create_texture_from_memory(const std::string& id, unsigned char* data, int data_size, unsigned int unit = 0, bool set_default_warp_filter = true);
+    static std::shared_ptr<Texture> create_texture_from_path(const std::string& key, const std::string& image_path, unsigned int unit = 0, bool set_default_warp_filter = true);
+    static std::shared_ptr<Texture> create_texture_from_memory(const std::string& key, unsigned char* data, int data_size, unsigned int unit = 0, bool set_default_warp_filter = true);
 
     enum class Wrap_type {
         REPEAT,
@@ -46,6 +46,7 @@ public:
 private:
     GLuint m_texture_id{};
     unsigned int m_unit{};
+    std::string m_key{};
 public:
     Texture(const std::shared_ptr<Image> &image, unsigned int unit = 0, bool set_default_warp_filter = true);
     ~Texture();

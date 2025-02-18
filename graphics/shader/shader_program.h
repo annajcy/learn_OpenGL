@@ -4,15 +4,18 @@
 #include "shader_code.h"
 #include "utils/string_utils.h"
 
-class Shader_program
+
+class Shader_program : public std::enable_shared_from_this<Shader_program>
 {
 private:
     GLuint m_program_id{0};
     std::vector<std::shared_ptr<Shader_code>> m_shaders{};
+    std::string m_key{};
 public:
     Shader_program();
+    Shader_program(const std::string& vs_path, const std::string &fs_path);
     Shader_program(const Shader_program&) = delete;
-    ~Shader_program();
+    virtual ~Shader_program();
 
     void init();
     void destroy();
@@ -62,5 +65,7 @@ public:
     [[nodiscard]] GLuint get_id() const;
     [[nodiscard]] const std::vector<std::shared_ptr<Shader_code>>& get_shaders() const;
 
-    static std::shared_ptr<Shader_program> create_vs_fs_program(const std::string& vs_path, const std::string &fs_path);
+    static std::shared_ptr<Shader_program> create_shader_program(const std::string& vs_path, const std::string &fs_path);
+    static std::unordered_map<std::string, std::shared_ptr<Shader_program>> shader_program_cache;
+    
 };

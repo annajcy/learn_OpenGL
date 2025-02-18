@@ -40,6 +40,7 @@ void Texture::destroy() {
     if (m_texture_id == 0) return;
     attach_texture();
     glDeleteTextures(1, &m_texture_id);
+    texture_cache.erase(m_key);
     // After deletion, the texture unit that was bound to textureID is now bound to 0
 }
 
@@ -77,25 +78,27 @@ std::shared_ptr<Texture> Texture::create_default_texture(unsigned int unit, bool
     return create_texture_from_path(default_texture_path, default_texture_path, unit, set_default_warp_filter);
 }
 
-std::shared_ptr<Texture> Texture::create_texture_from_path(const std::string& id, const std::string& image_path, unsigned int unit, bool set_default_warp_filter) {
-    if (texture_cache.contains(id)) {
-        texture_cache[id]->unit() = unit;
-        return texture_cache.at(id);
+std::shared_ptr<Texture> Texture::create_texture_from_path(const std::string& key, const std::string& image_path, unsigned int unit, bool set_default_warp_filter) {
+    if (texture_cache.contains(key)) {
+        texture_cache[key]->unit() = unit;
+        return texture_cache.at(key);
     }
     auto image = std::make_shared<Image>(image_path);
     auto texture = std::make_shared<Texture>(image, unit, set_default_warp_filter);
-    texture_cache.insert({id, texture});
+    texture->m_key = key;
+    texture_cache.insert({key, texture});
     return texture;
 }
 
-std::shared_ptr<Texture> Texture::create_texture_from_memory(const std::string& id, unsigned char* data, int data_size, unsigned int unit, bool set_default_warp_filter) {
-    if (texture_cache.contains(id)) {
-        texture_cache[id]->unit() = unit;
-        return texture_cache.at(id);
+std::shared_ptr<Texture> Texture::create_texture_from_memory(const std::string& key, unsigned char* data, int data_size, unsigned int unit, bool set_default_warp_filter) {
+    if (texture_cache.contains(key)) {
+        texture_cache[key]->unit() = unit;
+        return texture_cache.at(key);
     }
     auto image = std::make_shared<Image>(data, data_size);
     auto texture = std::make_shared<Texture>(image, unit, set_default_warp_filter);
-    texture_cache.insert({id, texture});
+    texture->m_key = key;
+    texture_cache.insert({key, texture});
     return texture;
 }
 
