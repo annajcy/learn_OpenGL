@@ -1,8 +1,7 @@
 #include "phong_material.h"
 
-Phong_material::Phong_material() : Material(Material_type::PHONG) { 
-    m_shader = Shader_program::create_shader_program("assets/shaders/phong/phong.vert", "assets/shaders/phong/phong.frag");
-}
+Phong_material::Phong_material() : Material(Material_type::PHONG, Shader_program::create_shader_program("assets/shaders/phong/phong.vert", "assets/shaders/phong/phong.frag")) { }
+Phong_material::Phong_material(Material_type type, const std::shared_ptr<Shader_program>& shader) : Material(type, shader) {}
 
 float Phong_material::kd() const { return m_kd; }
 float Phong_material::ks() const { return m_ks; }
@@ -15,7 +14,6 @@ float& Phong_material::ka() { return m_ka; }
 float& Phong_material::shiness() { return m_shiness; }
 
 std::shared_ptr<Texture>& Phong_material::main_texture() { return m_main_texture; }
-std::shared_ptr<Texture>& Phong_material::specular_mask_texture() { return m_specular_mask_texture; }
 
 void Phong_material::update_uniform(const std::shared_ptr<Node>& node, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting) {
 
@@ -25,10 +23,7 @@ void Phong_material::update_uniform(const std::shared_ptr<Node>& node, const std
     auto &spls = light_setting->spot_lights();
 
     m_shader->set_uniform<float>("time", glfwGetTime());
-
     m_shader->set_uniform<int>("main_sampler", 0);
-    m_shader->set_uniform<int>("specular_mask_sampler", 1);
-
     m_shader->set_uniform_glm<glm::vec4>("material", glm::vec4(ka(), kd(), ks(), shiness()));
 
     m_shader->set_uniform_glm<glm::mat4>("model_matrix", node->model_matrix());

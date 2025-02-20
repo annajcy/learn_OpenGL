@@ -1,9 +1,6 @@
 #include "depth_material.h"
 
-Depth_material::Depth_material() : Material(Material_type::DEPTH) {
-    m_shader = Shader_program::create_shader_program("assets/shaders/depth/depth.vert", "assets/shaders/depth/depth.frag");
-}
-
+Depth_material::Depth_material() : Material(Material_type::DEPTH, Shader_program::create_shader_program("assets/shaders/depth/depth.vert", "assets/shaders/depth/depth.frag")) {}
 Depth_material::~Depth_material() = default;
 
 void Depth_material::update_uniform(const std::shared_ptr<Node>& node, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting) {

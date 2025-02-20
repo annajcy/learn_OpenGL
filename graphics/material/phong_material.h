@@ -5,18 +5,18 @@
 
 class Phong_material : public Material
 {
-private:
+protected:
     float m_kd{1.0f};
     float m_ks{1.0f};
     float m_ka{1.0f};
     float m_shiness{16.0f};
 
     std::shared_ptr<Texture> m_main_texture{};
-    std::shared_ptr<Texture> m_specular_mask_texture{};
-
+    
 public:
     Phong_material();
-    ~Phong_material() override = default;
+    Phong_material(Material_type type, const std::shared_ptr<Shader_program>& shader);
+    virtual ~Phong_material() override = default;
 
     [[nodiscard]] float kd() const;
     [[nodiscard]] float ks() const;
@@ -29,8 +29,7 @@ public:
     float& shiness();
 
     std::shared_ptr<Texture>& main_texture();
-    std::shared_ptr<Texture>& specular_mask_texture();
 
-    void update_uniform(const std::shared_ptr<Node>& node, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting) override;
+    virtual void update_uniform(const std::shared_ptr<Node>& node, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting) override;
     
 };

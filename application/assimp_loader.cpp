@@ -84,10 +84,29 @@ std::shared_ptr<Mesh> Assimp_loader::process_mesh(const aiScene* scene, aiMesh* 
         auto diffuse = process_texture(scene, ai_material, aiTextureType::aiTextureType_DIFFUSE, 0);
         phong_mat->main_texture() = diffuse ? diffuse : Texture::create_default_texture(0);
 
+        material = phong_mat;
+
+    } else if (material_type == Material::Material_type::PHONG_OPACITY_MASK) {
+        auto phong_om_mat = std::make_shared<Phong_opacity_mask_material>();
+        aiMaterial* ai_material = scene->mMaterials[ai_mesh->mMaterialIndex];
+
+        phong_om_mat->main_texture() = Texture::create_texture_from_path("assets/image/grass.jpg", "assets/image/grass.jpg", 0);
+        phong_om_mat->opcacity_mask_texture() = Texture::create_texture_from_path("assets/image/grassMask.png", "assets/image/grassMask.png", 2);
+
+        material = phong_om_mat;
+
+    } else if (material_type == Material::Material_type::PHONG_SPECULAR_MASK) {
+        auto phong_mat = std::make_shared<Phong_specular_mask_material>();
+        aiMaterial* ai_material = scene->mMaterials[ai_mesh->mMaterialIndex];
+
+        auto diffuse = process_texture(scene, ai_material, aiTextureType::aiTextureType_DIFFUSE, 0);
+        phong_mat->main_texture() = diffuse ? diffuse : Texture::create_default_texture(0);
+
         auto specular = process_texture(scene, ai_material, aiTextureType::aiTextureType_SPECULAR, 1);
         phong_mat->specular_mask_texture() = specular ? specular : Texture::create_default_texture(1);
 
         material = phong_mat;
+
     } else if (material_type == Material::Material_type::EDGE){
         material = std::make_shared<Edge_material>();
     } else {

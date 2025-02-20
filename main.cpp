@@ -108,20 +108,22 @@ void prepare_lights() {
 
 void prepare_model() {
 
-	// model = Assimp_loader::load("assets/model/monster/monster.fbx");
-	// model->scale() = glm::vec3(0.01f);
-	// model->position().y = -1.0f;
-
-	Assimp_loader::default_material_type = Material::Material_type::PHONG;
-	auto model = Assimp_loader::load("assets/model/backpack/backpack.obj");
-	model->scale() = glm::vec3(0.95f);
-
-	Assimp_loader::default_material_type = Material::Material_type::EDGE;
-	auto model_edge = Assimp_loader::load("assets/model/backpack/backpack.obj");
-
 	scene = std::make_shared<Scene>();
+
+	// Assimp_loader::default_material_type = Material::Material_type::PHONG;
+	// auto model = Assimp_loader::load("assets/model/backpack/backpack.obj");
+	// model->scale() = glm::vec3(0.95f);
+	
+	// scene->add_child(model);
+
+	Assimp_loader::default_material_type = Material::Material_type::PHONG_OPACITY_MASK;
+	auto model = Assimp_loader::load("assets/model/grass/grass.fbx");
+	model->scale() = glm::vec3(0.005f);
 	scene->add_child(model);
-	scene->add_child(model_edge);
+
+	// Assimp_loader::default_material_type = Material::Material_type::EDGE;
+	// auto model_edge = Assimp_loader::load("assets/model/backpack/backpack.obj");
+	// scene->add_child(model_edge);
 }
 
 void prepare_renderer() {

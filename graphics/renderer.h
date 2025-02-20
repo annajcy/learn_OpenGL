@@ -27,10 +27,14 @@ public:
     std::shared_ptr<Scene>& scene();
 
     void render_mesh(const std::shared_ptr<Mesh>& mesh);
+    void set_render_list(const std::shared_ptr<Node>& node);
     void render_node(const std::shared_ptr<Node>& node);
     void init_state();
     void clear();
     void render();
     void set_clear_color(const glm::vec3& color);
+
+    static std::vector<std::shared_ptr<Mesh>> opaque_meshes;
+    static std::vector<std::shared_ptr<Mesh>> albedo_meshes;
 
 };

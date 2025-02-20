@@ -7,6 +7,7 @@ in vec3 normal;
 
 uniform float time;
 uniform sampler2D main_sampler;
+uniform sampler2D specular_mask_sampler;
 
 uniform vec3 camera_position;
 
@@ -71,7 +72,7 @@ void main() {
 	vec3 result = vec3(0.0, 0.0, 0.0);
 
 	vec3 object_color = texture(main_sampler, uv).rgb;
-	
+	float specular_mask = texture(specular_mask_sampler, uv).x;
 	vec3 normal_n = normalize(normal);
 	vec3 view_direction_n = normalize(world_position - camera_position);
 
@@ -91,7 +92,7 @@ void main() {
 		Directional_light light = directional_lights[i];
 		vec3 light_direction_n = normalize(light.direction);
 		result += kd * diffuse(light.color, object_color, normal_n, light_direction_n, light.intensity);
-		result += ks * specular(light.color, normal_n, light_direction_n, view_direction_n, shiness, light.intensity);
+		result += ks * specular(light.color, normal_n, light_direction_n, view_direction_n, shiness, light.intensity) * specular_mask;
 	}
 
 	//point
@@ -101,7 +102,7 @@ void main() {
 		float dist = length(world_position - light.position);
 		float attenuation = 1.0 / (light.k2 * dist * dist + light.k1 * dist + light.kc);
 		result += kd * diffuse(light.color, object_color, normal_n, light_direction_n, light.intensity * attenuation);
-		result += ks * specular(light.color, normal_n, light_direction_n, view_direction_n, shiness, light.intensity * attenuation);
+		result += ks * specular(light.color, normal_n, light_direction_n, view_direction_n, shiness, light.intensity * attenuation) * specular_mask;
 	}
 
 	//spot light
@@ -114,7 +115,7 @@ void main() {
 		float attenuation = clamp((gamma - light.outer_angle) / (light.inner_angle - light.outer_angle), 0.0, 1.0);
 
 		result += kd * diffuse(light.color, object_color , normal_n, light_direction_n, light.intensity * attenuation);
-		result += ks * specular(light.color, normal_n, light_direction_n, view_direction_n, shiness, light.intensity * attenuation);
+		result += ks * specular(light.color, normal_n, light_direction_n, view_direction_n, shiness, light.intensity *attenuation) * specular_mask;
 	}
 
 	frag_color = vec4(result, 1.0);

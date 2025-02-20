@@ -7,6 +7,7 @@ in vec3 normal;
 
 uniform float time;
 uniform sampler2D main_sampler;
+uniform sampler2D opacity_mask_sampler;
 
 uniform vec3 camera_position;
 
@@ -71,6 +72,8 @@ void main() {
 	vec3 result = vec3(0.0, 0.0, 0.0);
 
 	vec3 object_color = texture(main_sampler, uv).rgb;
+	float alpha = texture(main_sampler, uv).a;
+	float opacity_mask = texture(opacity_mask_sampler, uv).x;
 	
 	vec3 normal_n = normalize(normal);
 	vec3 view_direction_n = normalize(world_position - camera_position);
@@ -114,9 +117,8 @@ void main() {
 		float attenuation = clamp((gamma - light.outer_angle) / (light.inner_angle - light.outer_angle), 0.0, 1.0);
 
 		result += kd * diffuse(light.color, object_color , normal_n, light_direction_n, light.intensity * attenuation);
-		result += ks * specular(light.color, normal_n, light_direction_n, view_direction_n, shiness, light.intensity * attenuation);
+		result += ks * specular(light.color, normal_n, light_direction_n, view_direction_n, shiness, light.intensity *attenuation);
 	}
 
-	frag_color = vec4(result, 1.0);
-
+	frag_color = vec4(result, alpha * opacity_mask);
 }

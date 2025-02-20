@@ -4,7 +4,7 @@
 //Depth test
 
 Depth_test_setting::Depth_test_setting() : Material_setting() {}
-Depth_test_setting::~Depth_test_setting() {}
+Depth_test_setting::~Depth_test_setting() = default;
 
 void Depth_test_setting::reset_to_default() {
     glEnable(GL_DEPTH_TEST);
@@ -27,10 +27,16 @@ void Depth_test_setting::apply() {
     }
 }
 
+Depth_test_setting Depth_test_setting::disable_write_setting() {
+    auto setting = Depth_test_setting();
+    setting.write_enabled = false;
+    return setting;
+}
+
 //Polygon offset
 
 Polygon_offset_setting::Polygon_offset_setting() : Material_setting() {}
-Polygon_offset_setting::~Polygon_offset_setting() {}
+Polygon_offset_setting::~Polygon_offset_setting() = default;
 
 Polygon_offset_setting Polygon_offset_setting::enable_setting() {
     Polygon_offset_setting setting{};
@@ -59,7 +65,7 @@ void Polygon_offset_setting::apply() {
 //Stencil Test
 
 Stencil_test_setting::Stencil_test_setting() : Material_setting() {}
-Stencil_test_setting::~Stencil_test_setting() {}
+Stencil_test_setting::~Stencil_test_setting() = default;
 
 Stencil_test_setting Stencil_test_setting::edge_setting() {
     Stencil_test_setting setting{};
@@ -89,5 +95,29 @@ void Stencil_test_setting::apply() {
         glStencilFunc(stencil_function, stencil_reference, stencil_function_mask);
     } else {
         glDisable(GL_STENCIL_TEST);
+    }
+}
+
+//Color blend
+
+Color_blend_setting::Color_blend_setting() : Material_setting() {}
+Color_blend_setting::~Color_blend_setting() = default;
+
+Color_blend_setting Color_blend_setting::enable_setting() {
+   auto setting = Color_blend_setting();
+   setting.enable = true;
+   return setting;
+}
+
+void Color_blend_setting::reset_to_default() {
+    glDisable(GL_BLEND);
+}
+
+void Color_blend_setting::apply() {
+    if (enable) {
+        glEnable(GL_BLEND);
+        glBlendFunc(src_factor, dst_factor);
+    } else {
+        glDisable(GL_BLEND);
     }
 }

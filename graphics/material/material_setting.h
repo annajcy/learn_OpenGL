@@ -17,6 +17,7 @@ struct Depth_test_setting : public Material_setting {
     Depth_test_setting();
     ~Depth_test_setting() override;
 
+    static Depth_test_setting disable_write_setting();
     static void reset_to_default();
     void apply() override;
 };
@@ -52,3 +53,18 @@ struct Stencil_test_setting : public Material_setting {
     static void reset_to_default();
     void apply() override;
 };
+
+struct Color_blend_setting : public Material_setting {
+    bool enable{false};
+    unsigned int src_factor{GL_SRC_ALPHA};
+    unsigned int dst_factor{GL_ONE_MINUS_SRC_ALPHA};
+
+    Color_blend_setting();
+    ~Color_blend_setting() override;
+
+    static Color_blend_setting enable_setting();
+    static void reset_to_default();
+    void apply() override;
+
+};
+

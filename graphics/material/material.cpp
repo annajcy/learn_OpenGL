@@ -1,6 +1,6 @@
 #include "material.h"
 
-Material::Material(Material_type type) : m_type(type) {}
+Material::Material(Material_type type, const std::shared_ptr<Shader_program>& shader) : m_type(type), m_shader(shader) {}
 Material::~Material() = default;
 Material::Material_type Material::type() const { return m_type; }
 
@@ -12,6 +12,9 @@ Stencil_test_setting& Material::stencil_test_setting() { return m_stencil_test_s
 
 Polygon_offset_setting Material::polygon_offset_setting() const { return m_polygon_offset_setting; }
 Polygon_offset_setting& Material::polygon_offset_setting() { return m_polygon_offset_setting; }
+
+Color_blend_setting& Material::color_blend_setting() { return m_color_blend_setting; }
+Color_blend_setting Material::color_blend_setting() const { return m_color_blend_setting; }
 
 std::shared_ptr<Shader_program> Material::shader() const { return m_shader; }
 std::shared_ptr<Shader_program>& Material::shader() { return m_shader; }

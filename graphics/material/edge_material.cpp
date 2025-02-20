@@ -1,7 +1,6 @@
 #include "edge_material.h"
 
-Edge_material::Edge_material() : Material(Material_type::EDGE) {
-    m_shader = Shader_program::create_shader_program("assets/shaders/edge/edge.vert", "assets/shaders/edge/edge.frag");
+Edge_material::Edge_material() : Material(Material_type::EDGE, Shader_program::create_shader_program("assets/shaders/edge/edge.vert", "assets/shaders/edge/edge.frag")) {
     m_stencil_test_setting = Stencil_test_setting::edge_setting();
 }
 
