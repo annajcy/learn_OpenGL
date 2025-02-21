@@ -58,7 +58,8 @@ public:
 
     Node world_node() const;
 
-    void look_at(const glm::vec3& target_direction);
+    void look_at_direction(const glm::vec3& target_direction);
+    void look_at_point(const glm::vec3& target_point);
     void translate(const glm::vec3 &direction, float distance);
     void rotate(float angle, const glm::vec3& axis);
     void pitch(float angle);

@@ -21,3 +21,8 @@ Face_culling_setting Material::face_cull_setting() const { return m_face_cull_se
 
 std::shared_ptr<Shader_program> Material::shader() const { return m_shader; }
 std::shared_ptr<Shader_program>& Material::shader() { return m_shader; }
+
+void Material::before_geometry_draw() {}
+void Material::after_geometry_draw() {}
+
+void Material::load_from_assimp(const aiScene* scene, const aiMaterial* assimp_material) { }

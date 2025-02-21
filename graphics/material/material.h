@@ -47,5 +47,9 @@ public:
 
     std::shared_ptr<Shader_program>& shader();
 
+    virtual void before_geometry_draw();
+    virtual void after_geometry_draw();
+    virtual void load_from_assimp(const aiScene* scene, const aiMaterial* assimp_material);
+
     virtual void update_uniform(const std::shared_ptr<Node>& node, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting) = 0;
 };

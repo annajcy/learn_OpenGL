@@ -69,40 +69,45 @@ void prepare_camera() {
 		50.0f
 	);
 
-	camera->position() = glm::vec3(0.0f, 0.0f, -5.0f);
+	camera->position() = glm::vec3(0.0f, 0.0f, 5.0f);
+	camera->look_at_point(glm::vec3(0.0f, 0.0f, 0.0f));
 	camera_control = std::make_shared<Trackball_camera_control>(camera);
 }
 
 void prepare_lights() {
 	
 	auto directional_light = std::make_shared<Directional_light>(); 
-
-	directional_light->look_at(glm::vec3(1.0, 0.0, 0.0));
-	
-	auto spot_light = std::make_shared<Spot_light>();
-	spot_light->position() = glm::vec3(0.0f, 0.0f, 2.0f);
-	spot_light->look_at(glm::vec3(0.0, 0.0f, -1.0f));
-	spot_light->inner_angle() = 5.0f;
-	spot_light->outer_angle() = 10.0f;
-	spot_light->color() = glm::vec3(1.0, 1.0, 0.0);
-
-	auto point_light_1 = std::make_shared<Point_light>();
-	point_light_1->position() = glm::vec3(1.0f, 0.0f, 0.0f);
-	point_light_1->color() = glm::vec3(1.0f, 0.0f, 0.0f);
-
-	auto point_light_2 = std::make_shared<Point_light>();
-	point_light_2->position() = glm::vec3(0.0f, 1.0f, 0.0f);
-	point_light_2->color() = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	auto point_light_3 = std::make_shared<Point_light>();
-	point_light_3->position() = glm::vec3(0.0f, 0.0f, -1.0f);
-	point_light_3->color() = glm::vec3(0.0f, 0.0f, 1.0f);
+	directional_light->look_at_direction(glm::vec3(1.0, -1.0, -1.0));
+	directional_light->intensity() = 0.8f;
 
 	auto ambient_light = std::make_shared<Ambient_light>();
-	ambient_light->intensity() = 0.3f;
+	ambient_light->intensity() = 0.25f;
+	
+	// auto spot_light = std::make_shared<Spot_light>();
+	// spot_light->position() = glm::vec3(0.0f, 0.0f, 2.0f);
+	// spot_light->look_at_direction(glm::vec3(0.0, 0.0f, -1.0f));
+	// spot_light->inner_angle() = 5.0f;
+	// spot_light->outer_angle() = 10.0f;
+	// spot_light->color() = glm::vec3(1.0, 1.0, 0.0);
+
+	// auto point_light_1 = std::make_shared<Point_light>();
+	// point_light_1->position() = glm::vec3(1.0f, 0.0f, 0.0f);
+	// point_light_1->color() = glm::vec3(1.0f, 0.0f, 0.0f);
+
+	// auto point_light_2 = std::make_shared<Point_light>();
+	// point_light_2->position() = glm::vec3(0.0f, 1.0f, 0.0f);
+	// point_light_2->color() = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	// auto point_light_3 = std::make_shared<Point_light>();
+	// point_light_3->position() = glm::vec3(0.0f, 0.0f, -1.0f);
+	// point_light_3->color() = glm::vec3(0.0f, 0.0f, 1.0f);
+
+	// light_setting = std::make_shared<Light_setting>(std::vector<std::shared_ptr<Light>> {
+	// 	ambient_light, directional_light, point_light_1, point_light_2, point_light_3, spot_light
+	// });
 
 	light_setting = std::make_shared<Light_setting>(std::vector<std::shared_ptr<Light>> {
-		ambient_light, directional_light, point_light_1, point_light_2, point_light_3, spot_light
+		ambient_light, directional_light
 	});
 }
 
@@ -110,19 +115,37 @@ void prepare_model() {
 
 	scene = std::make_shared<Scene>();
 
-	Assimp_loader::default_material_type = Material::Material_type::PHONG_SPECULAR_MASK;
-	auto model = Assimp_loader::load("assets/model/backpack/backpack.obj");
-	model->scale() = glm::vec3(0.95f);
-	scene->add_child(model);
+	{
+		Assimp_loader::default_material_type = Material::Material_type::PHONG;
+		auto model = Assimp_loader::load("assets/model/mary/Marry.obj");
+		model->position().y -= 1.5f;
+		scene->add_child(model);
 
-	// Assimp_loader::default_material_type = Material::Material_type::PHONG_OPACITY_MASK;
-	// auto model = Assimp_loader::load("assets/model/grass/grass.fbx");
-	// model->scale() = glm::vec3(0.005f);
-	// scene->add_child(model);
+		auto plane_material = std::make_shared<Phong_material>();
+		plane_material->main_texture() = Texture::create_default_texture();
+		auto plane = std::make_shared<Mesh>(Geometry::create_plane(50.0f, 50.0f), plane_material);
+		plane->rotate(-90.0f, plane->right());
+		plane->position().y -= 1.5f;
+		scene->add_child(plane);
+	}
 
-	// Assimp_loader::default_material_type = Material::Material_type::EDGE;
-	// auto model_edge = Assimp_loader::load("assets/model/backpack/backpack.obj");
-	// scene->add_child(model_edge);
+	
+
+	{
+		Assimp_loader::default_material_type = Material::Material_type::PHONG_OPACITY_MASK;
+		auto grass = Assimp_loader::load("assets/model/grass/grass.fbx");
+		grass->scale() = glm::vec3(0.005f);
+		grass->position().x -= 1.5f;
+		grass->position().y -= 1.3f;
+		scene->add_child(grass);
+	}
+
+	{	
+		Assimp_loader::default_material_type = Material::Material_type::PHONG_SPECULAR_MASK;
+		auto bag = Assimp_loader::load("assets/model/backpack/backpack.obj");
+		bag->position().z -= 2.0f;
+		scene->add_child(bag);
+	}
 }
 
 void prepare_renderer() {

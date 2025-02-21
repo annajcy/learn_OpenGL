@@ -1,23 +1,12 @@
 #include "assimp_loader.h"
 
 Material::Material_type Assimp_loader::default_material_type = Material::Material_type::PHONG;
-std::string Assimp_loader::folder_path{};
-
-// Static function: Converts aiMatrix4x4 to glm::mat4
-glm::mat4 Assimp_loader::to_glm_mat4(const aiMatrix4x4& value) {
-    return glm::mat4{
-        value.a1, value.a2, value.a3, value.a4,
-        value.b1, value.b2, value.b3, value.b4,
-        value.c1, value.c2, value.c3, value.c4,
-        value.d1, value.d2, value.d3, value.d4
-    };
-}
 
 // Static function: Processes a node in the scene
 std::shared_ptr<Node> Assimp_loader::process_node(const aiScene* scene, aiNode* ai_node) {
     std::shared_ptr<Node> node = std::make_shared<Node>();
 
-    glm::mat4 local_transform = to_glm_mat4(ai_node->mTransformation);
+    glm::mat4 local_transform = Assimp_utils::to_glm_mat4(ai_node->mTransformation);
 
     utils::decompose_transform(local_transform, node->position(), node->rotation(), node->scale());
 
@@ -73,71 +62,27 @@ std::shared_ptr<Mesh> Assimp_loader::process_mesh(const aiScene* scene, aiMesh* 
         }
     }
 
+    aiMaterial* ai_material = scene->mMaterials[ai_mesh->mMaterialIndex];
+    
     // Create geometry and material
     std::shared_ptr<Geometry> geometry = std::make_shared<Geometry>(positions, normals, uvs, indices);
     std::shared_ptr<Material> material{};
 
     if (material_type == Material::Material_type::PHONG) {
-        auto phong_mat = std::make_shared<Phong_material>();
-        aiMaterial* ai_material = scene->mMaterials[ai_mesh->mMaterialIndex];
-
-        auto diffuse = process_texture(scene, ai_material, aiTextureType::aiTextureType_DIFFUSE, 0);
-        phong_mat->main_texture() = diffuse ? diffuse : Texture::create_default_texture(0);
-
-        material = phong_mat;
-
+        material = std::make_shared<Phong_material>();
     } else if (material_type == Material::Material_type::PHONG_OPACITY_MASK) {
-        auto phong_om_mat = std::make_shared<Phong_opacity_mask_material>();
-        aiMaterial* ai_material = scene->mMaterials[ai_mesh->mMaterialIndex];
-
-        phong_om_mat->main_texture() = Texture::create_texture_from_path("assets/image/grass.jpg", "assets/image/grass.jpg", 0);
-        phong_om_mat->opcacity_mask_texture() = Texture::create_texture_from_path("assets/image/grassMask.png", "assets/image/grassMask.png", 2);
-
-        material = phong_om_mat;
-
+        material = std::make_shared<Phong_opacity_mask_material>();
     } else if (material_type == Material::Material_type::PHONG_SPECULAR_MASK) {
-        auto phong_mat = std::make_shared<Phong_specular_mask_material>();
-        aiMaterial* ai_material = scene->mMaterials[ai_mesh->mMaterialIndex];
-
-        auto diffuse = process_texture(scene, ai_material, aiTextureType::aiTextureType_DIFFUSE, 0);
-        phong_mat->main_texture() = diffuse ? diffuse : Texture::create_default_texture(0);
-
-        auto specular = process_texture(scene, ai_material, aiTextureType::aiTextureType_SPECULAR, 1);
-        phong_mat->specular_mask_texture() = specular ? specular : Texture::create_default_texture(1);
-
-        material = phong_mat;
-
+        material = std::make_shared<Phong_specular_mask_material>();
     } else if (material_type == Material::Material_type::EDGE){
         material = std::make_shared<Edge_material>();
     } else {
         material = std::make_shared<Depth_material>();
     }
 
+    material->load_from_assimp(scene, ai_material);
+
     return std::make_shared<Mesh>(geometry, material);
-}
-
-// Static function: Processes a texture for the material
-std::shared_ptr<Texture> Assimp_loader::process_texture(
-    const aiScene* scene, const aiMaterial* ai_material, const aiTextureType type, 
-    unsigned int unit, bool set_default_warp_filter) 
-{
-    std::shared_ptr<Texture> texture{};
-    aiString ai_path{};
-    ai_material->Get(AI_MATKEY_TEXTURE(type, 0), ai_path);
-    
-    if (!ai_path.length) return nullptr;  // No texture
-
-    const aiTexture* ai_texture = scene->GetEmbeddedTexture(ai_path.C_Str());
-    
-    if (ai_texture) {
-        unsigned char* data = reinterpret_cast<unsigned char*>(ai_texture->pcData);
-        int data_size = ai_texture->mHeight ? ai_texture->mHeight * ai_texture->mWidth * 4 : ai_texture->mWidth;
-        texture = Texture::create_texture_from_memory(folder_path + ai_path.C_Str(), data, data_size, unit, set_default_warp_filter);
-    } else {
-        texture = Texture::create_texture_from_path(folder_path + ai_path.C_Str(), folder_path + ai_path.C_Str(), unit, set_default_warp_filter);
-    }
-
-    return texture;
 }
 
 // Static function: Loads a model from a path
@@ -150,8 +95,8 @@ std::shared_ptr<Node> Assimp_loader::load(const std::string& path) {
         return nullptr;
     }
 
-    folder_path = path;
-    while (folder_path.back() != '/') folder_path.pop_back();
+    Assimp_utils::folder_path = path;
+    while (Assimp_utils::folder_path.back() != '/') Assimp_utils::folder_path.pop_back();
 
     auto node = process_node(scene, scene->mRootNode);
     return node;

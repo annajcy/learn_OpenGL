@@ -55,3 +55,20 @@ void Phong_material::update_uniform(const std::shared_ptr<Node>& node, const std
         spl->set_shader_uniform(m_shader, "spot_lights", i);
     }
 }
+
+void Phong_material::before_geometry_draw() {
+    if (m_main_texture != nullptr) {
+        m_main_texture->attach_texture();
+    }
+}
+
+void Phong_material::after_geometry_draw() {
+    if (m_main_texture!= nullptr) {
+        m_main_texture->detach_texture();
+    }
+}
+
+void Phong_material::load_from_assimp(const aiScene* scene, const aiMaterial* assimp_material) {
+    auto diffuse = Assimp_utils::process_texture(scene, assimp_material, aiTextureType::aiTextureType_DIFFUSE, 0);
+    m_main_texture = diffuse ? diffuse : Texture::create_default_texture(0);
+}

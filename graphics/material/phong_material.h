@@ -2,6 +2,7 @@
 
 #include "material.h"
 #include "graphics/texture.h"
+#include "application/assimp_utils.h"
 
 class Phong_material : public Material
 {
@@ -29,6 +30,10 @@ public:
     float& shiness();
 
     std::shared_ptr<Texture>& main_texture();
+
+    virtual void before_geometry_draw() override;
+    virtual void after_geometry_draw() override;
+    virtual void load_from_assimp(const aiScene* scene, const aiMaterial* assimp_material) override;
 
     virtual void update_uniform(const std::shared_ptr<Node>& node, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting) override;
     

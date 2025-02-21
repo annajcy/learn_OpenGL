@@ -75,7 +75,12 @@ glm::vec3 Node::left() const { return -right(); }
 glm::vec3 Node::front() const { return glm::cross(right(), up()); }
 glm::vec3 Node::back() const { return -front(); }
 
-void Node::look_at(const glm::vec3& target_direction) {
+void Node::look_at_point(const glm::vec3& target_point) {
+    glm::vec3 direction = glm::normalize(target_point - m_position);
+    look_at_direction(direction);
+}
+
+void Node::look_at_direction(const glm::vec3& target_direction) {
     glm::vec3 direction = glm::normalize(target_direction);
     glm::vec3 current_front = front();
 
