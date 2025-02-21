@@ -19,6 +19,7 @@ void Renderer::init_state() {
     Polygon_offset_setting::reset_to_default();
     Stencil_test_setting::reset_to_default();
     Color_blend_setting::reset_to_default();
+    Face_culling_setting::reset_to_default();
 }
 
 void Renderer::clear() {
@@ -32,6 +33,7 @@ void Renderer::render_mesh(const std::shared_ptr<Mesh>& mesh) {
     mesh->material()->polygon_offset_setting().apply();
     mesh->material()->stencil_test_setting().apply();
     mesh->material()->color_blend_setting().apply();
+    mesh->material()->face_cull_setting().apply();
 
     mesh->material()->shader()->attach_program();
     mesh->material()->update_uniform(mesh, m_camera, m_light_settings);

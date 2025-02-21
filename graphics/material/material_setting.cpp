@@ -121,3 +121,28 @@ void Color_blend_setting::apply() {
         glDisable(GL_BLEND);
     }
 }
+
+//Face culling
+
+Face_culling_setting::Face_culling_setting() : Material_setting() {}
+Face_culling_setting::~Face_culling_setting() = default;
+
+Face_culling_setting Face_culling_setting::enable_setting() {
+    auto setting = Face_culling_setting();
+    setting.enable = true;
+    return setting;
+}
+
+void Face_culling_setting::reset_to_default() {
+    glDisable(GL_CULL_FACE);
+}
+
+void Face_culling_setting::apply() {
+    if (enable) {
+        glEnable(GL_CULL_FACE);
+        glFrontFace(front_face);
+        glCullFace(cull_face);
+    } else {
+        glDisable(GL_CULL_FACE);
+    }
+}

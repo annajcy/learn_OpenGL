@@ -68,3 +68,15 @@ struct Color_blend_setting : public Material_setting {
 
 };
 
+struct Face_culling_setting : public Material_setting {
+    bool enable{false};
+    unsigned int front_face{GL_CCW};
+    unsigned int cull_face{GL_BACK};
+
+    Face_culling_setting();
+    ~Face_culling_setting() override;
+
+    static Face_culling_setting enable_setting();
+    static void reset_to_default();
+    void apply() override;
+};

@@ -110,16 +110,15 @@ void prepare_model() {
 
 	scene = std::make_shared<Scene>();
 
-	// Assimp_loader::default_material_type = Material::Material_type::PHONG_SPECULAR_MASK;
-	// auto model = Assimp_loader::load("assets/model/backpack/backpack.obj");
-	// model->scale() = glm::vec3(0.95f);
-	
-	// scene->add_child(model);
-
-	Assimp_loader::default_material_type = Material::Material_type::PHONG_OPACITY_MASK;
-	auto model = Assimp_loader::load("assets/model/grass/grass.fbx");
-	model->scale() = glm::vec3(0.005f);
+	Assimp_loader::default_material_type = Material::Material_type::PHONG_SPECULAR_MASK;
+	auto model = Assimp_loader::load("assets/model/backpack/backpack.obj");
+	model->scale() = glm::vec3(0.95f);
 	scene->add_child(model);
+
+	// Assimp_loader::default_material_type = Material::Material_type::PHONG_OPACITY_MASK;
+	// auto model = Assimp_loader::load("assets/model/grass/grass.fbx");
+	// model->scale() = glm::vec3(0.005f);
+	// scene->add_child(model);
 
 	// Assimp_loader::default_material_type = Material::Material_type::EDGE;
 	// auto model_edge = Assimp_loader::load("assets/model/backpack/backpack.obj");

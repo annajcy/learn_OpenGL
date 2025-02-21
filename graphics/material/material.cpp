@@ -16,5 +16,8 @@ Polygon_offset_setting& Material::polygon_offset_setting() { return m_polygon_of
 Color_blend_setting& Material::color_blend_setting() { return m_color_blend_setting; }
 Color_blend_setting Material::color_blend_setting() const { return m_color_blend_setting; }
 
+Face_culling_setting& Material::face_cull_setting() { return m_face_cull_setting; }
+Face_culling_setting Material::face_cull_setting() const { return m_face_cull_setting; }
+
 std::shared_ptr<Shader_program> Material::shader() const { return m_shader; }
 std::shared_ptr<Shader_program>& Material::shader() { return m_shader; }

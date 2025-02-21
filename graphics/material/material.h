@@ -24,6 +24,7 @@ protected:
     Polygon_offset_setting m_polygon_offset_setting{};
     Stencil_test_setting m_stencil_test_setting{};
     Color_blend_setting m_color_blend_setting{};
+    Face_culling_setting m_face_cull_setting{};
 
 public:
     explicit Material(Material_type type, const std::shared_ptr<Shader_program>& shader);
@@ -36,11 +37,13 @@ public:
     [[nodiscard]] Stencil_test_setting stencil_test_setting() const;
     [[nodiscard]] Color_blend_setting color_blend_setting() const;
     [[nodiscard]] std::shared_ptr<Shader_program> shader() const;
+    [[nodiscard]] Face_culling_setting face_cull_setting() const;
 
     Depth_test_setting& depth_test_setting();
     Polygon_offset_setting& polygon_offset_setting();
     Stencil_test_setting& stencil_test_setting();
     Color_blend_setting& color_blend_setting();
+    Face_culling_setting& face_cull_setting();
 
     std::shared_ptr<Shader_program>& shader();
 
