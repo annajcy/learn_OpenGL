@@ -54,6 +54,7 @@ public:
 
     ~Geometry();
 
+    static std::shared_ptr<Geometry> create_screen();
     static std::shared_ptr<Geometry> create_box(float size);
     static std::shared_ptr<Geometry> create_plane(float width, float height);
     static std::shared_ptr<Geometry> create_sphere(float radius, int lat_count, int long_count);

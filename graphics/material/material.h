@@ -11,7 +11,7 @@ class Material
 {
 public:
     enum class Material_type {
-        PHONG_SPECULAR_MASK, PHONG_OPACITY_MASK, PHONG, EDGE, DEPTH
+        PHONG_SPECULAR_MASK, PHONG_OPACITY_MASK, PHONG, EDGE, DEPTH, SCREEN
     };
 
 protected:

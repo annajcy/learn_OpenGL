@@ -76,8 +76,10 @@ std::shared_ptr<Mesh> Assimp_loader::process_mesh(const aiScene* scene, aiMesh* 
         material = std::make_shared<Phong_specular_mask_material>();
     } else if (material_type == Material::Material_type::EDGE){
         material = std::make_shared<Edge_material>();
-    } else {
+    } else if (material_type == Material::Material_type::DEPTH) {
         material = std::make_shared<Depth_material>();
+    } else {
+        material = std::make_shared<Screen_material>();
     }
 
     material->load_from_assimp(scene, ai_material);

@@ -264,3 +264,44 @@ std::shared_ptr<Geometry> Geometry::create_sphere(float radius, int lat_count, i
 
     return geo;
 }
+
+
+std::shared_ptr<Geometry> Geometry::create_screen() {
+
+    std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
+
+    std::vector<float> positions{
+        -1.0f,  1.0f, 0.0f,
+		-1.0f, -1.0f, 0.0f,
+		 1.0f, -1.0f, 0.0f,
+		 1.0f,  1.0f, 0.0f
+    };
+
+    std::vector<float> uvs{
+        0.0f, 1.0f,
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f
+    };
+
+    std::vector<float> normals{
+        0.0f, 0.0f, 1.0f,  
+        0.0f, 0.0f, 1.0f,  
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+    };
+
+    std::vector<unsigned int> indices{
+        0, 1, 2,
+		0, 2, 3
+    };
+
+    geo->init(
+        positions.data(), positions.size() * sizeof(float), 
+        uvs.data(), uvs.size() * sizeof(float), 
+        normals.data(), normals.size() * sizeof(float), 
+        indices.data(), indices.size() * sizeof(unsigned int), indices.size());
+
+    return geo; 
+
+}

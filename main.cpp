@@ -20,6 +20,20 @@
 
 #include "utils/string_utils.h"
 
+#include "graphics/material/material.h"
+#include "graphics/material/phong_material.h"
+#include "graphics/material/phong_specular_mask_material.h"
+#include "graphics/material/screen_material.h"
+
+#include "graphics/light/light.h"
+#include "graphics/light/ambient_light.h"
+#include "graphics/light/directional_light.h"
+#include "graphics/light/point_light.h"
+#include "graphics/light/spot_light.h"
+
+#include "graphics/node.h"
+#include "graphics/scene.h"
+
 std::shared_ptr<Texture> main_texture {};
 std::shared_ptr<Texture> specular_mask_texture {};
 
@@ -78,44 +92,41 @@ void prepare_lights() {
 	
 	auto directional_light = std::make_shared<Directional_light>(); 
 	directional_light->look_at_direction(glm::vec3(1.0, -1.0, -1.0));
-	directional_light->intensity() = 0.8f;
+	directional_light->intensity() = 0.5f;
 
 	auto ambient_light = std::make_shared<Ambient_light>();
 	ambient_light->intensity() = 0.25f;
 	
-	// auto spot_light = std::make_shared<Spot_light>();
-	// spot_light->position() = glm::vec3(0.0f, 0.0f, 2.0f);
-	// spot_light->look_at_direction(glm::vec3(0.0, 0.0f, -1.0f));
-	// spot_light->inner_angle() = 5.0f;
-	// spot_light->outer_angle() = 10.0f;
-	// spot_light->color() = glm::vec3(1.0, 1.0, 0.0);
+	auto spot_light = std::make_shared<Spot_light>();
+	spot_light->position() = glm::vec3(0.0f, 0.0f, 2.0f);
+	spot_light->look_at_direction(glm::vec3(0.0, 0.0f, -1.0f));
+	spot_light->inner_angle() = 5.0f;
+	spot_light->outer_angle() = 10.0f;
+	spot_light->color() = glm::vec3(1.0, 1.0, 0.0);
 
-	// auto point_light_1 = std::make_shared<Point_light>();
-	// point_light_1->position() = glm::vec3(1.0f, 0.0f, 0.0f);
-	// point_light_1->color() = glm::vec3(1.0f, 0.0f, 0.0f);
+	auto point_light_1 = std::make_shared<Point_light>();
+	point_light_1->position() = glm::vec3(1.0f, 0.0f, 0.0f);
+	point_light_1->color() = glm::vec3(1.0f, 0.0f, 0.0f);
 
-	// auto point_light_2 = std::make_shared<Point_light>();
-	// point_light_2->position() = glm::vec3(0.0f, 1.0f, 0.0f);
-	// point_light_2->color() = glm::vec3(0.0f, 1.0f, 0.0f);
+	auto point_light_2 = std::make_shared<Point_light>();
+	point_light_2->position() = glm::vec3(0.0f, 1.0f, 0.0f);
+	point_light_2->color() = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	// auto point_light_3 = std::make_shared<Point_light>();
-	// point_light_3->position() = glm::vec3(0.0f, 0.0f, -1.0f);
-	// point_light_3->color() = glm::vec3(0.0f, 0.0f, 1.0f);
-
-	// light_setting = std::make_shared<Light_setting>(std::vector<std::shared_ptr<Light>> {
-	// 	ambient_light, directional_light, point_light_1, point_light_2, point_light_3, spot_light
-	// });
+	auto point_light_3 = std::make_shared<Point_light>();
+	point_light_3->position() = glm::vec3(0.0f, 0.0f, -1.0f);
+	point_light_3->color() = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	light_setting = std::make_shared<Light_setting>(std::vector<std::shared_ptr<Light>> {
-		ambient_light, directional_light
+		ambient_light, directional_light, point_light_1, point_light_2, point_light_3, spot_light
 	});
+
 }
 
 void prepare_model() {
 
 	scene = std::make_shared<Scene>();
 
-	{
+	if (true) {
 		Assimp_loader::default_material_type = Material::Material_type::PHONG;
 		auto model = Assimp_loader::load("assets/model/mary/Marry.obj");
 		model->position().y -= 1.5f;
@@ -129,9 +140,7 @@ void prepare_model() {
 		scene->add_child(plane);
 	}
 
-	
-
-	{
+	if (false) {
 		Assimp_loader::default_material_type = Material::Material_type::PHONG_OPACITY_MASK;
 		auto grass = Assimp_loader::load("assets/model/grass/grass.fbx");
 		grass->scale() = glm::vec3(0.005f);
@@ -140,11 +149,22 @@ void prepare_model() {
 		scene->add_child(grass);
 	}
 
-	{	
+	if (false) {	
 		Assimp_loader::default_material_type = Material::Material_type::PHONG_SPECULAR_MASK;
 		auto bag = Assimp_loader::load("assets/model/backpack/backpack.obj");
 		bag->position().z -= 2.0f;
+		bag->position().y += 1.0f;
 		scene->add_child(bag);
+	}
+
+	if (false) {
+		auto material = std::make_shared<Screen_material>();
+		material->screen_texture() = Texture::create_texture_from_path("assets/image/box.png", "assets/image/box.png", 0);
+
+		auto geometry = Geometry::create_screen();
+		auto screen = std::make_shared<Mesh>(geometry, material);
+		
+		scene->add_child(screen);
 	}
 }
 
@@ -178,6 +198,7 @@ void render_gui() {
 void render() {
 	renderer->clear();
 	renderer->render();
+	check_error();
 }
 
 int main()

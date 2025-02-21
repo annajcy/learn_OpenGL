@@ -9,6 +9,7 @@
 #include "graphics/material/depth_material.h"
 #include "graphics/material/phong_opacity_mask_material.h"
 #include "graphics/material/phong_specular_mask_material.h"
+#include "graphics/material/screen_material.h"
 
 #include "utils/math_utils.h"
 
