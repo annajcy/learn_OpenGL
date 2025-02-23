@@ -7,6 +7,7 @@ Screen_material::~Screen_material() = default;
 
 void Screen_material::update_uniform(const std::shared_ptr<Node>& node, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting) {
     m_shader->set_uniform<int>("screen_texture_sampler", 0);
+    m_shader->set_uniform_glm<glm::vec2>("resolution", glm::vec2(m_screen_texture->width(), m_screen_texture->height()));
 }
 
 void Screen_material::before_geometry_draw() {

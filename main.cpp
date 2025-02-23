@@ -132,6 +132,8 @@ void prepare_model() {
 	scene = std::make_shared<Scene>();
 	screen_scene = std::make_shared<Scene>();
 
+	//model
+
 	if (true) {
 		Assimp_loader::default_material_type = Material::Material_type::PHONG;
 		auto model = Assimp_loader::load("assets/model/mary/Marry.obj");
@@ -162,6 +164,8 @@ void prepare_model() {
 		bag->position().y += 1.0f;
 		scene->add_child(bag);
 	}
+
+	//screen
 
 	if (true) {
 		auto material = std::make_shared<Screen_material>();

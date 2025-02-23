@@ -31,6 +31,9 @@ std::shared_ptr<Texture> Texture::create_depth_stencil_attachment(int width, int
 
 Texture::Texture(int width, int height, unsigned int unit, unsigned int external_format, unsigned int internal_format, unsigned int buffer_format) {
     m_unit = unit;
+    m_width = width;
+    m_height = height;
+
     glGenTextures(1, &m_texture_id);
     
     attach_texture();
@@ -38,12 +41,28 @@ Texture::Texture(int width, int height, unsigned int unit, unsigned int external
     detach_texture();
 }
 
+int Texture::width() const {
+    return m_width;
+}
+
+int Texture::height() const {
+    return m_height;
+}
+
 Texture::~Texture() {
     destroy();
 }
 
 void Texture::init(const std::shared_ptr<Image> &image, unsigned int unit, bool set_default_warp_filter) {
+   
+    if (!image) {
+        std::cerr << "invalid image" << std::endl;
+        return;
+    }
+
     m_unit = unit;
+    m_width = image->width();
+    m_height = image->height();
 
     glGenTextures(1, &m_texture_id);
 

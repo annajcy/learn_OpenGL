@@ -6,7 +6,6 @@
 class Frame_buffer
 {
 private:
-
     unsigned int m_fbo{};
     int m_width{};
     int m_height{};
@@ -15,7 +14,6 @@ private:
     std::shared_ptr<Texture> m_depth_stencil_attachment{};
 
 public:
-
     Frame_buffer(int width, int height);
     ~Frame_buffer();
 
@@ -25,24 +23,10 @@ public:
     void detach();
     void destroy();
 
-    std::shared_ptr<Texture>& color_attachment() {
-        return m_color_attachment;
-    }
+    std::shared_ptr<Texture>& color_attachment();
+    std::shared_ptr<Texture>& depth_stencil_attachment();
 
-    std::shared_ptr<Texture>& depth_stencil_attachment() {
-        return m_depth_stencil_attachment;
-    }
-
-    [[nodiscard]] int width() const {
-        return m_width;
-    }
-
-    [[nodiscard]] int height() const {
-        return m_height;
-    }
-
-    [[nodiscard]] unsigned int fbo() const {
-        return m_fbo;
-    }
-    
+    [[nodiscard]] int width() const;
+    [[nodiscard]] int height() const;
+    [[nodiscard]] unsigned int fbo() const;
 };

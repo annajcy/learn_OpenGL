@@ -46,6 +46,9 @@ public:
     constexpr GLenum filter_type_to_gl_enum(Filter_type filter);
 
 private:
+
+    int m_width{};
+    int m_height{};
     GLuint m_texture_id{};
     unsigned int m_unit{};
     std::string m_key{};
@@ -62,6 +65,9 @@ public:
     
     void attach_texture();
     void detach_texture();
+
+    [[nodiscard]] int width() const; 
+    [[nodiscard]] int height() const;
 
     [[nodiscard]] GLuint id() const;
     [[nodiscard]] unsigned int unit() const;
