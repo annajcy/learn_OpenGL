@@ -7,6 +7,37 @@ Texture::Texture(const std::shared_ptr<Image> &image, unsigned int unit, bool se
     init(image, unit, set_default_warp_filter);
 }
 
+std::shared_ptr<Texture> Texture::create_color_attachment(int width, int height, unsigned int unit) {
+    auto texture = std::make_shared<Texture>(width, height, unit);
+    texture->attach_texture();
+    texture->set_filter(Filter::MIN, Filter_type::LINEAR);
+    texture->set_filter(Filter::MAG, Filter_type::LINEAR);
+    texture->set_wrap(Warp::S, Wrap_type::CLAMP_TO_EDGE);
+    texture->set_wrap(Warp::T, Wrap_type::CLAMP_TO_EDGE);
+    texture->detach_texture();
+    return texture;
+}
+
+std::shared_ptr<Texture> Texture::create_depth_stencil_attachment(int width, int height, unsigned int unit) {
+    auto texture = std::make_shared<Texture>(width, height, unit, GL_DEPTH_STENCIL, GL_DEPTH24_STENCIL8, GL_UNSIGNED_INT_24_8);
+    texture->attach_texture();
+    texture->set_filter(Filter::MIN, Filter_type::NEAREST);
+    texture->set_filter(Filter::MAG, Filter_type::NEAREST);
+    texture->set_wrap(Warp::S, Wrap_type::CLAMP_TO_EDGE);
+    texture->set_wrap(Warp::T, Wrap_type::CLAMP_TO_EDGE);
+    texture->detach_texture();
+    return texture;
+}
+
+Texture::Texture(int width, int height, unsigned int unit, unsigned int external_format, unsigned int internal_format, unsigned int buffer_format) {
+    m_unit = unit;
+    glGenTextures(1, &m_texture_id);
+    
+    attach_texture();
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, external_format, buffer_format, nullptr);
+    detach_texture();
+}
+
 Texture::~Texture() {
     destroy();
 }

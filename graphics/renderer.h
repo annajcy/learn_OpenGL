@@ -10,6 +10,8 @@
 #include "graphics/material/edge_material.h"
 #include "graphics/material/depth_material.h"
 
+#include "graphics/frame_buffer.h"
+
 #include "scene.h"
 
 class Renderer {
@@ -19,7 +21,7 @@ private:
     std::shared_ptr<Scene> m_scene{};
 
 public:
-    Renderer(const std::shared_ptr<Scene> &scene, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting);
+    Renderer();
     ~Renderer() = default;
 
     std::shared_ptr<Camera>& camera();
@@ -31,7 +33,7 @@ public:
     void render_node(const std::shared_ptr<Node>& node);
     void init_state();
     void clear();
-    void render();
+    void render(std::shared_ptr<Frame_buffer> fbo = nullptr);
     void set_clear_color(const glm::vec3& color);
 
     static std::vector<std::shared_ptr<Mesh>> opaque_meshes;

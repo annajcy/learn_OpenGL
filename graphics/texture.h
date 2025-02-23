@@ -13,6 +13,8 @@ public:
     static std::shared_ptr<Texture> create_default_texture(unsigned int unit = 0, bool set_default_warp_filter = true);
     static std::shared_ptr<Texture> create_texture_from_path(const std::string& key, const std::string& image_path, unsigned int unit = 0, bool set_default_warp_filter = true);
     static std::shared_ptr<Texture> create_texture_from_memory(const std::string& key, unsigned char* data, int data_size, unsigned int unit = 0, bool set_default_warp_filter = true);
+    static std::shared_ptr<Texture> create_color_attachment(int width, int height, unsigned int unit = 0);
+    static std::shared_ptr<Texture> create_depth_stencil_attachment(int width, int height, unsigned int unit = 0);
 
     enum class Wrap_type {
         REPEAT,
@@ -48,6 +50,8 @@ private:
     unsigned int m_unit{};
     std::string m_key{};
 public:
+
+    Texture(int width, int height, unsigned int unit = 0, unsigned int external_format = GL_RGBA, unsigned int internal_format = GL_RGBA, unsigned int buffer_format = GL_UNSIGNED_BYTE);
     Texture(const std::shared_ptr<Image> &image, unsigned int unit = 0, bool set_default_warp_filter = true);
     ~Texture();
 

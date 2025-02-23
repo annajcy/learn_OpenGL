@@ -44,6 +44,9 @@ std::shared_ptr<Light_setting> light_setting{};
 std::shared_ptr<Renderer> renderer{};
 
 std::shared_ptr<Scene> scene{};
+std::shared_ptr<Scene> screen_scene{};
+
+std::shared_ptr<Frame_buffer> frame_buffer{};
 
 glm::vec3 clear_color{};
 
@@ -124,7 +127,10 @@ void prepare_lights() {
 
 void prepare_model() {
 
+	frame_buffer = std::make_shared<Frame_buffer>(App::get_instance()->width(), App::get_instance()->height());
+	
 	scene = std::make_shared<Scene>();
+	screen_scene = std::make_shared<Scene>();
 
 	if (true) {
 		Assimp_loader::default_material_type = Material::Material_type::PHONG;
@@ -140,7 +146,7 @@ void prepare_model() {
 		scene->add_child(plane);
 	}
 
-	if (false) {
+	if (true) {
 		Assimp_loader::default_material_type = Material::Material_type::PHONG_OPACITY_MASK;
 		auto grass = Assimp_loader::load("assets/model/grass/grass.fbx");
 		grass->scale() = glm::vec3(0.005f);
@@ -149,7 +155,7 @@ void prepare_model() {
 		scene->add_child(grass);
 	}
 
-	if (false) {	
+	if (true) {	
 		Assimp_loader::default_material_type = Material::Material_type::PHONG_SPECULAR_MASK;
 		auto bag = Assimp_loader::load("assets/model/backpack/backpack.obj");
 		bag->position().z -= 2.0f;
@@ -157,24 +163,26 @@ void prepare_model() {
 		scene->add_child(bag);
 	}
 
-	if (false) {
+	if (true) {
 		auto material = std::make_shared<Screen_material>();
-		material->screen_texture() = Texture::create_texture_from_path("assets/image/box.png", "assets/image/box.png", 0);
+		material->screen_texture() = frame_buffer->color_attachment();
 
 		auto geometry = Geometry::create_screen();
 		auto screen = std::make_shared<Mesh>(geometry, material);
 		
-		scene->add_child(screen);
+		screen_scene->add_child(screen);
 	}
 }
 
 void prepare_renderer() {
-	renderer = std::make_shared<Renderer>(scene, camera, light_setting);
+	renderer = std::make_shared<Renderer>();
+	renderer->camera() = camera;
+	renderer->light_setting() = light_setting;
 	renderer->init_state();
 	renderer->set_clear_color(clear_color);
 }
 
-void render_gui() {
+void render_gui() {	
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -196,10 +204,17 @@ void render_gui() {
 }
 
 void render() {
-	renderer->clear();
+	//pass 1
+	renderer->scene() = scene;
+	renderer->render(frame_buffer);
+
+	//pass 2
+	renderer->scene() = screen_scene;
 	renderer->render();
-	check_error();
+
+	render_gui();
 }
+
 
 int main()
 {
@@ -221,7 +236,6 @@ int main()
 		App::get_instance()->update();
 		camera_control->update();
 		render();
-		render_gui();
 	}
 
 	Application::destroy();

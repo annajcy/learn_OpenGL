@@ -1,7 +1,6 @@
 #include "renderer.h"
 
-Renderer::Renderer(const std::shared_ptr<Scene> &scene, const std::shared_ptr<Camera>& camera, const std::shared_ptr<Light_setting>& light_setting) 
-    : m_scene(scene), m_camera(camera), m_light_settings(light_setting) { }
+Renderer::Renderer() { }
 
 std::shared_ptr<Scene>& Renderer::scene() { return m_scene; }
 std::shared_ptr<Camera>& Renderer::camera() { return m_camera; }
@@ -76,11 +75,19 @@ void Renderer::render_node(const std::shared_ptr<Node>& node) {
 
 }
 
-void Renderer::render() {
+void Renderer::render(std::shared_ptr<Frame_buffer> frame_buffer) {
     if (!m_camera || !m_light_settings || !m_scene) {
         std::cout << "invalid render params" << std::endl;
         return;
     }
+
+    if (frame_buffer) {
+        frame_buffer->attach();
+    } else {
+        Frame_buffer::set_to_screen();
+    }
+
+    clear();
 
     opaque_meshes.clear();
     albedo_meshes.clear();
@@ -108,6 +115,8 @@ void Renderer::render() {
         render_mesh(mesh);
     }
 
-    //render_node(m_scene);
+    if (frame_buffer) {
+        frame_buffer->detach();
+    }
 }
 
