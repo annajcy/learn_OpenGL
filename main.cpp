@@ -34,6 +34,8 @@
 #include "graphics/node.h"
 #include "graphics/scene.h"
 
+#include "graphics/frame_buffer.h"
+
 std::shared_ptr<Texture> main_texture {};
 std::shared_ptr<Texture> specular_mask_texture {};
 
