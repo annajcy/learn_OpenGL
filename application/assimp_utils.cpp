@@ -15,7 +15,7 @@ glm::mat4 Assimp_utils::to_glm_mat4(const aiMatrix4x4& value) {
 // Process and load a texture from an Assimp material
 std::shared_ptr<Texture> Assimp_utils::process_texture(
     const aiScene* scene, const aiMaterial* ai_material, const aiTextureType type, 
-    unsigned int unit, bool set_default_warp_filter) 
+    unsigned int unit) 
 {
     std::shared_ptr<Texture> texture{};
     aiString ai_path{};
@@ -34,10 +34,10 @@ std::shared_ptr<Texture> Assimp_utils::process_texture(
         // Calculate data size (compressed or uncompressed)
         int data_size = ai_texture->mHeight ? ai_texture->mHeight * ai_texture->mWidth * 4 : ai_texture->mWidth;
         // Create texture from memory
-        texture = Texture::create_texture_from_memory(folder_path + ai_path.C_Str(), data, data_size, unit, set_default_warp_filter);
+        texture = Texture::create_texture_from_memory(data, data_size, unit, folder_path + ai_path.C_Str());
     } else {
         // Load texture from external file
-        texture = Texture::create_texture_from_path(folder_path + ai_path.C_Str(), folder_path + ai_path.C_Str(), unit, set_default_warp_filter);
+        texture = Texture::create_texture_from_path(folder_path + ai_path.C_Str(), unit, folder_path + ai_path.C_Str());
     }
 
     // Return the created texture

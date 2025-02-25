@@ -4,8 +4,8 @@ Phong_opacity_mask_material::Phong_opacity_mask_material() :
     Phong_material(
         Material_type::PHONG_OPACITY_MASK, 
         Shader_program::create_shader_program(
-            "assets/shaders/phong_opacity_mask/phong_opacity_mask.vert", 
-            "assets/shaders/phong_opacity_mask/phong_opacity_mask.frag")) { 
+            "assets/shaders/shading/phong_opacity_mask/phong_opacity_mask.vert", 
+            "assets/shaders/shading/phong_opacity_mask/phong_opacity_mask.frag")) { 
                 m_color_blend_setting = Color_blend_setting::enable_setting();
                 m_depth_test_setting = Depth_test_setting::disable_write_setting();
             }
@@ -36,6 +36,6 @@ void Phong_opacity_mask_material::after_geometry_draw() {
 }
 
 void Phong_opacity_mask_material::load_from_assimp(const aiScene* scene, const aiMaterial* assimp_material) {
-    m_main_texture = Texture::create_texture_from_path("assets/image/grass.jpg", "assets/image/grass.jpg", 0);
-    m_opacity_mask_texture = Texture::create_texture_from_path("assets/image/grassMask.png", "assets/image/grassMask.png", 1);
+    m_main_texture = Texture::create_texture_from_path("assets/image/grass.jpg", 0, "assets/image/grass.jpg");
+    m_opacity_mask_texture = Texture::create_texture_from_path("assets/image/grassMask.png", 1, "assets/image/grassMask.png");
 }

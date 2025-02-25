@@ -24,6 +24,10 @@
 #include "graphics/material/phong_material.h"
 #include "graphics/material/phong_specular_mask_material.h"
 #include "graphics/material/screen_material.h"
+#include "graphics/material/cube_map_material.h"
+#include "graphics/material/depth_material.h"
+#include "graphics/material/edge_material.h"
+#include "graphics/material/sperical_map_material.h"
 
 #include "graphics/light/light.h"
 #include "graphics/light/ambient_light.h"
@@ -133,6 +137,21 @@ void prepare_model() {
 	
 	scene = std::make_shared<Scene>();
 	screen_scene = std::make_shared<Scene>();
+
+	//skybox
+	if (false) {
+		auto skybox_material = std::make_shared<Cube_map_material>();
+		auto box = Geometry::create_box();
+		auto skybox = std::make_shared<Mesh>(box, skybox_material);
+		scene->add_child(skybox);
+	}
+
+	if (true) {
+		auto skybox_material = std::make_shared<Sperical_map_material>();
+		auto box = Geometry::create_box(5.0f);
+		auto skybox = std::make_shared<Mesh>(box, skybox_material);
+		scene->add_child(skybox);
+	}
 
 	//model
 

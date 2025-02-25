@@ -1,6 +1,6 @@
 #include "phong_material.h"
 
-Phong_material::Phong_material() : Material(Material_type::PHONG, Shader_program::create_shader_program("assets/shaders/phong/phong.vert", "assets/shaders/phong/phong.frag")) { }
+Phong_material::Phong_material() : Material(Material_type::PHONG, Shader_program::create_shader_program("assets/shaders/shading/phong/phong.vert", "assets/shaders/shading/phong/phong.frag")) { }
 Phong_material::Phong_material(Material_type type, const std::shared_ptr<Shader_program>& shader) : Material(type, shader) {}
 
 float Phong_material::kd() const { return m_kd; }
@@ -71,4 +71,7 @@ void Phong_material::after_geometry_draw() {
 void Phong_material::load_from_assimp(const aiScene* scene, const aiMaterial* assimp_material) {
     auto diffuse = Assimp_utils::process_texture(scene, assimp_material, aiTextureType::aiTextureType_DIFFUSE, 0);
     m_main_texture = diffuse ? diffuse : Texture::create_default_texture(0);
+    m_main_texture->generate_mipmaps();
+    m_main_texture->set_filter(Texture::Filter::MIN, Texture::Filter_type::LINEAR_MIPMAP_LINEAR);
+    m_main_texture->set_filter(Texture::Filter::MAG, Texture::Filter_type::LINEAR);
 }

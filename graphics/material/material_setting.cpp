@@ -6,24 +6,26 @@
 Depth_test_setting::Depth_test_setting() : Material_setting() {}
 Depth_test_setting::~Depth_test_setting() = default;
 
+unsigned int Depth_test_setting::setting_id{ GL_DEPTH_TEST };
+
 void Depth_test_setting::reset_to_default() {
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glDepthMask(GL_TRUE);
+    glEnable(setting_id);
+    glDepthFunc(depth_test_function_to_gl_enum(Depth_test_function::LEQUAL));
+    glDepthMask(true);
 }
 
 void Depth_test_setting::apply() {
     if (test_enabled) {
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(depth_function);
+        glEnable(setting_id);
+        glDepthFunc(depth_test_function_to_gl_enum(depth_test_function));
     } else {
         glDisable(GL_DEPTH_TEST);
     }
 
     if (write_enabled) {
-        glDepthMask(GL_TRUE);
+        glDepthMask(true);
     } else {
-        glDepthMask(GL_FALSE);
+        glDepthMask(false);
     }
 }
 
@@ -41,89 +43,107 @@ Polygon_offset_setting::~Polygon_offset_setting() = default;
 Polygon_offset_setting Polygon_offset_setting::enable_setting() {
     Polygon_offset_setting setting{};
     setting.enabled = true;
-    setting.polygon_offset_type = GL_POLYGON_OFFSET_FILL;
+    setting.polygon_offset_type = Polygon_offset_type::FILL;
     setting.factor = 0.0f;
     setting.unit = 0.0f;
     return setting;
 }
 
 void Polygon_offset_setting::reset_to_default() {
-    glDisable(GL_POLYGON_OFFSET_FILL);
-    glDisable(GL_POLYGON_OFFSET_LINE);
+    glDisable(polygon_offset_type_to_gl_enum(Polygon_offset_type::FILL));
+    glDisable(polygon_offset_type_to_gl_enum(Polygon_offset_type::LINE));
 }
 
 void Polygon_offset_setting::apply() {
     if (enabled) {
-        glEnable(polygon_offset_type);
+        glEnable(polygon_offset_type_to_gl_enum(polygon_offset_type));
         glPolygonOffset(factor, unit);
     } else {
-        glDisable(GL_POLYGON_OFFSET_FILL);
-        glDisable(GL_POLYGON_OFFSET_LINE);
+        glDisable(polygon_offset_type_to_gl_enum(Polygon_offset_type::FILL));
+        glDisable(polygon_offset_type_to_gl_enum(Polygon_offset_type::LINE));
     }
 }
 
 //Stencil Test
 
+unsigned int Stencil_test_setting::setting_id{ GL_STENCIL_TEST };
+
 Stencil_test_setting::Stencil_test_setting() : Material_setting() {}
 Stencil_test_setting::~Stencil_test_setting() = default;
 
+// Stencil Test
 Stencil_test_setting Stencil_test_setting::edge_setting() {
     Stencil_test_setting setting{};
     setting.enable = true;
-    setting.stencil_fail = GL_KEEP;
-    setting.depth_fail = GL_KEEP;
-    setting.depth_pass = GL_KEEP;
+    setting.stencil_fail = Stencil_op::KEEP;
+    setting.depth_fail = Stencil_op::KEEP;
+    setting.depth_pass = Stencil_op::KEEP;
     setting.stencil_mask = 0x00;
-    setting.stencil_function = GL_NOTEQUAL;
+    setting.stencil_function = Stencil_func::NOTEQUAL;
     setting.stencil_reference = 1;
     setting.stencil_function_mask = 0xff;
     return setting;
 }
 
 void Stencil_test_setting::reset_to_default() {
-    glEnable(GL_STENCIL_TEST);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glEnable(setting_id);
+    glStencilOp(
+        stencil_op_to_gl_enum(Stencil_op::KEEP),
+        stencil_op_to_gl_enum(Stencil_op::KEEP),
+        stencil_op_to_gl_enum(Stencil_op::KEEP)
+    );
     glStencilMask(0xff);
 }
 
 void Stencil_test_setting::apply() {
     if (enable) {
-        glEnable(GL_STENCIL_TEST);
-
-        glStencilOp(stencil_fail, depth_fail, depth_pass);
+        glEnable(setting_id);
+        glStencilOp(
+            stencil_op_to_gl_enum(stencil_fail),
+            stencil_op_to_gl_enum(depth_fail),
+            stencil_op_to_gl_enum(depth_pass)
+        );
         glStencilMask(stencil_mask);
-        glStencilFunc(stencil_function, stencil_reference, stencil_function_mask);
+        glStencilFunc(
+            stencil_func_to_gl_enum(stencil_function),
+            stencil_reference,
+            stencil_function_mask
+        );
     } else {
-        glDisable(GL_STENCIL_TEST);
+        glDisable(setting_id);
     }
 }
 
-//Color blend
+// Color blend
 
+unsigned int Color_blend_setting::setting_id{ GL_BLEND };
 Color_blend_setting::Color_blend_setting() : Material_setting() {}
 Color_blend_setting::~Color_blend_setting() = default;
 
 Color_blend_setting Color_blend_setting::enable_setting() {
-   auto setting = Color_blend_setting();
-   setting.enable = true;
-   return setting;
-}
-
+    auto setting = Color_blend_setting();
+    setting.enable = true;
+    return setting;
+ }
 void Color_blend_setting::reset_to_default() {
-    glDisable(GL_BLEND);
+    glDisable(setting_id);
 }
 
 void Color_blend_setting::apply() {
     if (enable) {
-        glEnable(GL_BLEND);
-        glBlendFunc(src_factor, dst_factor);
+        glEnable(setting_id);
+        glBlendFunc(
+            blend_factor_to_gl_enum(src_factor),
+            blend_factor_to_gl_enum(dst_factor)
+        );
     } else {
-        glDisable(GL_BLEND);
+        glDisable(setting_id);
     }
 }
 
-//Face culling
+// Face culling
 
+unsigned int Face_culling_setting::setting_id{ GL_CULL_FACE };
 Face_culling_setting::Face_culling_setting() : Material_setting() {}
 Face_culling_setting::~Face_culling_setting() = default;
 
@@ -134,15 +154,15 @@ Face_culling_setting Face_culling_setting::enable_setting() {
 }
 
 void Face_culling_setting::reset_to_default() {
-    glDisable(GL_CULL_FACE);
+    glDisable(setting_id);
 }
 
 void Face_culling_setting::apply() {
     if (enable) {
-        glEnable(GL_CULL_FACE);
-        glFrontFace(front_face);
-        glCullFace(cull_face);
+        glEnable(setting_id);
+        glFrontFace(front_face_to_gl_enum(front_face));
+        glCullFace(cull_face_to_gl_enum(cull_face));
     } else {
-        glDisable(GL_CULL_FACE);
+        glDisable(setting_id);
     }
 }

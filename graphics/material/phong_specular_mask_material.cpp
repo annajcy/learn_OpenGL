@@ -4,8 +4,8 @@ Phong_specular_mask_material::Phong_specular_mask_material() :
     Phong_material(
         Material_type::PHONG_SPECULAR_MASK, 
         Shader_program::create_shader_program(
-            "assets/shaders/phong_specular_mask/phong_specular_mask.vert", 
-            "assets/shaders/phong_specular_mask/phong_specular_mask.frag")) { }
+            "assets/shaders/shading/phong_specular_mask/phong_specular_mask.vert", 
+            "assets/shaders/shading/phong_specular_mask/phong_specular_mask.frag")) { }
 
 Phong_specular_mask_material::~Phong_specular_mask_material() = default;
 

@@ -30,5 +30,5 @@ std::shared_ptr<Texture>& Screen_material::screen_texture() {
 }
 
 void Screen_material::load_from_assimp(const aiScene* scene, const aiMaterial* assimp_material) {
-    m_screen_texture = Texture::create_texture_from_path("assets/image/box.png", "assets/image/box.png", 0);
+    m_screen_texture = Texture::create_texture_from_path("assets/image/box.png", 0, "assets/image/box.png");
 }
