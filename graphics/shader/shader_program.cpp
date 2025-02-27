@@ -7,6 +7,11 @@ Shader_program::Shader_program() { init(); };
 Shader_program::Shader_program(const std::string& vs_path, const std::string &fs_path) {
 
     init();
+
+    std::cout << "Start to compile shader program :" << std::endl;
+    std::cout << "Vertex shader path: " << vs_path << std::endl;
+    std::cout << "Fragment shader path: " << fs_path << std::endl;
+
     std::shared_ptr<Shader_code> vs = std::make_shared<Shader_code>(utils::load_from_file(vs_path), Shader_code::Shader_type::VERTEX);
     vs->compile();
     vs->check_compile_error();
@@ -20,6 +25,8 @@ Shader_program::Shader_program(const std::string& vs_path, const std::string &fs
     
     link();
     check_link_error();
+
+
 
 }
 

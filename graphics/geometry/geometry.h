@@ -3,7 +3,7 @@
 #include "global/core.h"
 
 class Geometry {
-private:
+protected:
     // OpenGL handles
     unsigned int m_vao{};
     unsigned int m_ebo{}; 
@@ -34,7 +34,7 @@ public:
 
     void attach_geometry();
     void detach_geometry();
-    void draw();
+    virtual void draw();
 
     Geometry() = default;
 

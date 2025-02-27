@@ -2,7 +2,7 @@
 
 #include "global/core.h"
 
-#include "graphics/geometry.h"
+#include "graphics/geometry/geometry.h"
 #include "graphics/node.h"
 
 #include "graphics/material/material.h"

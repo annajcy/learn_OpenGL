@@ -5,7 +5,8 @@
 #include "graphics/shader/shader_code.h"
 #include "graphics/shader/shader_program.h"
 #include "graphics/texture.h"
-#include "graphics/geometry.h"
+#include "graphics/geometry/geometry.h"
+#include "graphics/geometry/geometry_instance.h"
 #include "graphics/renderer.h"
 
 #include "application/application.h"
@@ -23,11 +24,14 @@
 #include "graphics/material/material.h"
 #include "graphics/material/phong_material.h"
 #include "graphics/material/phong_specular_mask_material.h"
+#include "graphics/material/phong_opacity_mask_material.h"
+#include "graphics/material/phong_instance_material.h"
 #include "graphics/material/screen_material.h"
 #include "graphics/material/cube_map_material.h"
 #include "graphics/material/depth_material.h"
 #include "graphics/material/edge_material.h"
 #include "graphics/material/sperical_map_material.h"
+
 
 #include "graphics/light/light.h"
 #include "graphics/light/ambient_light.h"
@@ -146,7 +150,7 @@ void prepare_model() {
 		scene->add_child(skybox);
 	}
 
-	if (true) {
+	if (false) {
 		auto skybox_material = std::make_shared<Sperical_map_material>();
 		auto box = Geometry::create_box(5.0f);
 		auto skybox = std::make_shared<Mesh>(box, skybox_material);
@@ -155,7 +159,7 @@ void prepare_model() {
 
 	//model
 
-	if (true) {
+	if (false) {
 		Assimp_loader::default_material_type = Material::Material_type::PHONG;
 		auto model = Assimp_loader::load("assets/model/mary/Marry.obj");
 		model->position().y -= 1.5f;
@@ -169,7 +173,7 @@ void prepare_model() {
 		scene->add_child(plane);
 	}
 
-	if (true) {
+	if (false) {
 		Assimp_loader::default_material_type = Material::Material_type::PHONG_OPACITY_MASK;
 		auto grass = Assimp_loader::load("assets/model/grass/grass.fbx");
 		grass->scale() = glm::vec3(0.005f);
@@ -178,12 +182,26 @@ void prepare_model() {
 		scene->add_child(grass);
 	}
 
-	if (true) {	
+	if (false) {	
 		Assimp_loader::default_material_type = Material::Material_type::PHONG_SPECULAR_MASK;
 		auto bag = Assimp_loader::load("assets/model/backpack/backpack.obj");
 		bag->position().z -= 2.0f;
 		bag->position().y += 1.0f;
 		scene->add_child(bag);
+	}
+
+	if (true) {
+		auto material = std::make_shared<Phong_instance_material>();
+		material->main_texture() = Texture::create_default_texture();
+		auto geometry = Geometry_instance::create_box(1.0f, std::vector<glm::mat4> {
+			glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)),
+			glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+			glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+			glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f))
+		} );
+
+		auto instance = std::make_shared<Mesh>(geometry, material);
+		scene->add_child(instance);
 	}
 
 	//screen

@@ -24,7 +24,9 @@ void Geometry::detach_geometry() {
 }
 
 void Geometry::draw() {
+    attach_geometry();
     glDrawElements(GL_TRIANGLES, m_indices_count, GL_UNSIGNED_INT, 0);
+    detach_geometry();
 }
 
 Geometry::Geometry(
@@ -95,11 +97,10 @@ Geometry::~Geometry() {
 }
 
 std::shared_ptr<Geometry> Geometry::create_box(float size) {
-    std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
 
     auto half_size = size * 0.5f;
 
-    float positions[] = {
+    std::vector<float> positions = {
         // Front face
         -half_size, -half_size, half_size, half_size, -half_size, half_size, half_size, half_size, half_size, -half_size, half_size, half_size,
         // Back face
@@ -114,7 +115,7 @@ std::shared_ptr<Geometry> Geometry::create_box(float size) {
         -half_size, -half_size, -half_size, -half_size, -half_size, half_size, -half_size, half_size, half_size, -half_size, half_size, -half_size
     };
 
-    float uvs[] = {
+    std::vector<float> uvs = {
         0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
         0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
         0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
@@ -123,7 +124,7 @@ std::shared_ptr<Geometry> Geometry::create_box(float size) {
         0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
     };
 
-    float normals[] = {
+    std::vector<float> normals = {
         //front
         0.0f, 0.0f, 1.0f,
         0.0f, 0.0f, 1.0f,
@@ -161,7 +162,7 @@ std::shared_ptr<Geometry> Geometry::create_box(float size) {
         -1.0f, 0.0f, 0.0f,
     };
 
-    unsigned int indices[] = {
+    std::vector<unsigned int> indices = {
         0, 1, 2, 2, 3, 0,   // Front face
         4, 5, 6, 6, 7, 4,   // Back face
         8, 9, 10, 10, 11, 8,  // Top face
@@ -170,9 +171,7 @@ std::shared_ptr<Geometry> Geometry::create_box(float size) {
         20, 21, 22, 22, 23, 20  // Left face
     };
 
-    geo->init(positions, sizeof(positions), uvs, sizeof(uvs), normals, sizeof(normals), indices, sizeof(indices), sizeof(indices) / sizeof(unsigned int));
-
-    return geo;
+    return std::make_shared<Geometry>(positions, normals, uvs, indices);
 }
 
 std::shared_ptr<Geometry> Geometry::create_plane(float width, float height) {
@@ -181,39 +180,36 @@ std::shared_ptr<Geometry> Geometry::create_plane(float width, float height) {
     float half_width = width * 0.5f;
     float half_height = height * 0.5f;
 
-    float positions[] = {
+    std::vector<float> positions = {
         -half_width, -half_height, 0.0f,
         half_width, -half_height, 0.0f,
         half_width, half_height, 0.0f,
         -half_width, half_height, 0.0f,
     };
 
-    float uvs[] = {
+    std::vector<float> uvs = {
         0.0f, 0.0f,
         1.0f, 0.0f,
         1.0f, 1.0f,
         0.0f, 1.0f
     };
 
-    float normals[] = {
+    std::vector<float> normals = {
         0.0f, 0.0f, 1.0f,
         0.0f, 0.0f, 1.0f,
         0.0f, 0.0f, 1.0f,
         0.0f, 0.0f, 1.0f,
     };
 
-    unsigned int indices[] = {
+    std::vector<unsigned int> indices = {
         0, 1, 2,
         2, 3, 0
     };
 
-    geo->init(positions, sizeof(positions), uvs, sizeof(uvs), normals, sizeof(normals), indices, sizeof(indices), sizeof(indices) / sizeof(unsigned int));
-
-    return geo;
+    return std::make_shared<Geometry>(positions, normals, uvs, indices);
 }
 
 std::shared_ptr<Geometry> Geometry::create_sphere(float radius, int lat_count, int long_count) {
-    std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
 
     std::vector<float> positions{};
     std::vector<float> uvs{};
@@ -260,9 +256,8 @@ std::shared_ptr<Geometry> Geometry::create_sphere(float radius, int lat_count, i
             indices.push_back(p4);
         }
 
-    geo->init(positions.data(), positions.size() * sizeof(float), uvs.data(), uvs.size() * sizeof(float), normals.data(), normals.size() * sizeof(float), indices.data(), indices.size() * sizeof(unsigned int), indices.size());
 
-    return geo;
+    return std::make_shared<Geometry>(positions, normals, uvs, indices);
 }
 
 
@@ -296,12 +291,6 @@ std::shared_ptr<Geometry> Geometry::create_screen() {
 		0, 2, 3
     };
 
-    geo->init(
-        positions.data(), positions.size() * sizeof(float), 
-        uvs.data(), uvs.size() * sizeof(float), 
-        normals.data(), normals.size() * sizeof(float), 
-        indices.data(), indices.size() * sizeof(unsigned int), indices.size());
-
-    return geo; 
+    return std::make_shared<Geometry>(positions, normals, uvs, indices); 
 
 }
