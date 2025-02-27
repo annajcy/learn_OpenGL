@@ -59,21 +59,6 @@ void Renderer::set_render_list(const std::shared_ptr<Node>& node) {
     }
 }
 
-void Renderer::render_node(const std::shared_ptr<Node>& node) {
-
-    if (node == nullptr) return;
-
-    if (node->type() == Node::Node_type::MESH) {
-        render_mesh(std::dynamic_pointer_cast<Mesh>(node));
-    }
-
-    if (node->children().empty()) return;
-
-    for (auto &child : node->children()) {
-        render_node(child);
-    }
-
-}
 
 void Renderer::render(std::shared_ptr<Frame_buffer> frame_buffer) {
     if (!m_camera || !m_light_settings || !m_scene) {

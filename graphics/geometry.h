@@ -5,30 +5,30 @@
 class Geometry {
 private:
     // OpenGL handles
-    GLuint m_vao{};
-    GLuint m_ebo{}; 
+    unsigned int m_vao{};
+    unsigned int m_ebo{}; 
     
-    GLuint m_position_location{};
-    GLuint m_uv_location{};        
-    GLuint m_normal_location{};
+    unsigned int m_position_location{};
+    unsigned int m_uv_location{};        
+    unsigned int m_normal_location{};
 
-    GLuint m_position_vbo{};
-    GLuint m_uv_vbo{};        
-    GLuint m_normal_vbo{};  
+    unsigned int m_position_vbo{};
+    unsigned int m_uv_vbo{};        
+    unsigned int m_normal_vbo{};  
 
     int m_indices_count{};
 
 public:
-    GLuint vao() const;
-    GLuint ebo() const;
+    unsigned int vao() const;
+    unsigned int ebo() const;
 
-    GLuint position_location() const;
-    GLuint uv_location() const;
-    GLuint normal_location() const;
+    unsigned int position_location() const;
+    unsigned int uv_location() const;
+    unsigned int normal_location() const;
 
-    GLuint position_vbo() const;
-    GLuint uv_vbo() const;
-    GLuint normal_vbo() const;
+    unsigned int position_vbo() const;
+    unsigned int uv_vbo() const;
+    unsigned int normal_vbo() const;
 
     int indices_count() const;
 
@@ -55,7 +55,7 @@ public:
     ~Geometry();
 
     static std::shared_ptr<Geometry> create_screen();
-    static std::shared_ptr<Geometry> create_box(float size = 1.0f);
+    static std::shared_ptr<Geometry> create_box(float size);
     static std::shared_ptr<Geometry> create_plane(float width, float height);
     static std::shared_ptr<Geometry> create_sphere(float radius, int lat_count, int long_count);
 };

@@ -30,7 +30,6 @@ public:
 
     void render_mesh(const std::shared_ptr<Mesh>& mesh);
     void set_render_list(const std::shared_ptr<Node>& node);
-    void render_node(const std::shared_ptr<Node>& node);
     void init_state();
     void clear();
     void render(std::shared_ptr<Frame_buffer> fbo = nullptr);

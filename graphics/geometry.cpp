@@ -1,15 +1,15 @@
 #include "geometry.h"
 
-GLuint Geometry::vao() const { return m_vao; }
-GLuint Geometry::ebo() const { return m_ebo; }
+unsigned int Geometry::vao() const { return m_vao; }
+unsigned int Geometry::ebo() const { return m_ebo; }
 
-GLuint Geometry::position_location() const { return m_position_location; }
-GLuint Geometry::uv_location() const { return m_uv_location; }
-GLuint Geometry::normal_location() const { return m_normal_location; }
+unsigned int Geometry::position_location() const { return m_position_location; }
+unsigned int Geometry::uv_location() const { return m_uv_location; }
+unsigned int Geometry::normal_location() const { return m_normal_location; }
 
-GLuint Geometry::position_vbo() const { return m_position_vbo; }
-GLuint Geometry::uv_vbo() const { return m_uv_vbo; }
-GLuint Geometry::normal_vbo() const { return m_normal_vbo; }
+unsigned int Geometry::position_vbo() const { return m_position_vbo; }
+unsigned int Geometry::uv_vbo() const { return m_uv_vbo; }
+unsigned int Geometry::normal_vbo() const { return m_normal_vbo; }
 
 int Geometry::indices_count() const { return m_indices_count; }
 

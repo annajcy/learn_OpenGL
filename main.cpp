@@ -141,7 +141,7 @@ void prepare_model() {
 	//skybox
 	if (false) {
 		auto skybox_material = std::make_shared<Cube_map_material>();
-		auto box = Geometry::create_box();
+		auto box = Geometry::create_box(100.0f);
 		auto skybox = std::make_shared<Mesh>(box, skybox_material);
 		scene->add_child(skybox);
 	}
