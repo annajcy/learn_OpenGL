@@ -18,6 +18,8 @@ public:
         const std::vector<glm::mat4> &model_matrices
     );
 
+    ~Geometry_instance();
+
     void init_model_matrices(const std::vector<glm::mat4> &model_matrices);
     void update_model_matrices(const std::vector<glm::mat4> &model_matrices);
     void draw() override;

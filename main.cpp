@@ -143,14 +143,14 @@ void prepare_model() {
 	screen_scene = std::make_shared<Scene>();
 
 	//skybox
-	if (true) {
+	if (false) {
 		auto skybox_material = std::make_shared<Cube_map_material>();
 		auto box = Geometry::create_box(100.0f);
 		auto skybox = std::make_shared<Mesh>(box, skybox_material);
 		scene->add_child(skybox);
 	}
 
-	if (false) {
+	if (true) {
 		auto skybox_material = std::make_shared<Sperical_map_material>();
 		auto box = Geometry::create_box(5.0f);
 		auto skybox = std::make_shared<Mesh>(box, skybox_material);
@@ -159,7 +159,7 @@ void prepare_model() {
 
 	//model
 
-	if (false) {
+	if (true) {
 		Assimp_loader::default_material_type = Material::Material_type::PHONG;
 		auto model = Assimp_loader::load("assets/model/mary/Marry.obj");
 		model->position().y -= 1.5f;
@@ -173,7 +173,7 @@ void prepare_model() {
 		scene->add_child(plane);
 	}
 
-	if (false) {
+	if (true) {
 		Assimp_loader::default_material_type = Material::Material_type::PHONG_OPACITY_MASK;
 		auto grass = Assimp_loader::load("assets/model/grass/grass.fbx");
 		grass->scale() = glm::vec3(0.005f);
@@ -182,7 +182,7 @@ void prepare_model() {
 		scene->add_child(grass);
 	}
 
-	if (false) {	
+	if (true) {	
 		Assimp_loader::default_material_type = Material::Material_type::PHONG_SPECULAR_MASK;
 		auto bag = Assimp_loader::load("assets/model/backpack/backpack.obj");
 		bag->position().z -= 2.0f;
@@ -196,19 +196,14 @@ void prepare_model() {
 		auto material = std::make_shared<Phong_instance_material>();
 		material->main_texture() = Texture::create_default_texture();
 
-		// auto geometry = Geometry_instance::create_sphere(0.3f, 60, 60, std::vector<glm::mat4> {
-		// 	glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)),
-		// 	glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-		// 	glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
-		// } );
-
-		auto geometry = Geometry_instance::create_box(0.3f, std::vector<glm::mat4> {
+		auto geometry = Geometry_instance::create_sphere(0.3f, 60, 60, std::vector<glm::mat4> {
 			glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)),
 			glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
 			glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
 		} );
 
 		auto instance = std::make_shared<Mesh>(geometry, material);
+		instance->position().x -= 3.0f;
 		scene->add_child(instance);
 	}
 

@@ -9,7 +9,7 @@ void Screen_material::update_uniform(const std::shared_ptr<Node>& node, const st
     m_shader->set_uniform<int>("screen_texture_sampler", 0);
     m_shader->set_uniform_glm<glm::vec2>("resolution", glm::vec2(m_screen_texture->width(), m_screen_texture->height()));
     m_shader->set_uniform<int>("is_invert", 0);
-    m_shader->set_uniform<int>("is_blur", 0);
+    m_shader->set_uniform<int>("is_blur", 1);
     m_shader->set_uniform<int>("is_grayscale", 0);
 }
 

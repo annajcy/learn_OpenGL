@@ -10,6 +10,10 @@ Geometry_instance::Geometry_instance(
     init_model_matrices(model_matrices);
 }
 
+Geometry_instance::~Geometry_instance() {
+    glDeleteBuffers(1, &m_model_matrices_vbo);
+}
+
 void Geometry_instance::init_model_matrices(const std::vector<glm::mat4> &model_matrices) {
     m_instance_count = model_matrices.size();
 
