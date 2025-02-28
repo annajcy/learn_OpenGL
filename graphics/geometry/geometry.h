@@ -54,6 +54,11 @@ public:
 
     ~Geometry();
 
+    static void set_screen_geometry(std::vector<float> &positions, std::vector<float> &normals, std::vector<float> &uvs, std::vector<unsigned int> &indices);
+    static void set_box_geometry(float size, std::vector<float> &positions, std::vector<float> &normals, std::vector<float> &uvs, std::vector<unsigned int> &indices);
+    static void set_plane_geometry(float width, float height, std::vector<float> &positions, std::vector<float> &normals, std::vector<float> &uvs, std::vector<unsigned int> &indices);
+    static void set_sphere_geometry(float radius, int lat_count, int long_count, std::vector<float> &positions, std::vector<float> &normals, std::vector<float> &uvs, std::vector<unsigned int> &indices);
+
     static std::shared_ptr<Geometry> create_screen();
     static std::shared_ptr<Geometry> create_box(float size);
     static std::shared_ptr<Geometry> create_plane(float width, float height);

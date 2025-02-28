@@ -143,7 +143,7 @@ void prepare_model() {
 	screen_scene = std::make_shared<Scene>();
 
 	//skybox
-	if (false) {
+	if (true) {
 		auto skybox_material = std::make_shared<Cube_map_material>();
 		auto box = Geometry::create_box(100.0f);
 		auto skybox = std::make_shared<Mesh>(box, skybox_material);
@@ -190,14 +190,22 @@ void prepare_model() {
 		scene->add_child(bag);
 	}
 
+	//instanced draw
+
 	if (true) {
 		auto material = std::make_shared<Phong_instance_material>();
 		material->main_texture() = Texture::create_default_texture();
-		auto geometry = Geometry_instance::create_box(1.0f, std::vector<glm::mat4> {
+
+		// auto geometry = Geometry_instance::create_sphere(0.3f, 60, 60, std::vector<glm::mat4> {
+		// 	glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)),
+		// 	glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+		// 	glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+		// } );
+
+		auto geometry = Geometry_instance::create_box(0.3f, std::vector<glm::mat4> {
 			glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)),
 			glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
 			glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
-			glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f))
 		} );
 
 		auto instance = std::make_shared<Mesh>(geometry, material);
